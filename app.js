@@ -5,6 +5,7 @@
 const express = require('express');
 
 const logger = require('./logger');
+const database = require('./repositories/db-client');
 
 const PORT = process.env.PORT || 5002;
 
@@ -26,11 +27,13 @@ app.use('/api/products/', products);
 // app.use(forceSSL());
 
 app.get('/api/hello', (req, res) =>  {
+    //database.getStuff();
     res.send('Hello there, Maridalen Brenneri is coming up!');
 });
 
 app.listen(PORT, () => {
   logger.info(`API started, listening on ${ PORT }`);  
+  logger.info(`DATABASE_URL: ${process.env.DATABASE_URL}`);
 });
 
 
