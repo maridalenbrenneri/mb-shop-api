@@ -6,10 +6,12 @@
         "sourceMap": true,
         "target": "es6",
         "outDir": "./dist",
-        "baseUrl": "./src"
+        "baseUrl": "./src",
+        "allowJs": true
     },
     "include": [
-        "./src/**/*.ts"
+        "./src/**/*.ts",
+        "./src/**/*.js"
     ],
     "exclude": [
         "node_modules"
