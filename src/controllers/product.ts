@@ -20,12 +20,9 @@ export let getProduct = (req: Request, res: Response) => {
  * Get all products
  */
 export let getAllProducts = (req: Request, res: Response) => {
-    var productId = req.params.id;
     var provider = req.get('X-Header-Provider');
 
     dbclient.getStuff();
-
-    logger.info("all products was requested");
 
     res.send("All products");
 };
