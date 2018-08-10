@@ -20,7 +20,7 @@ class AdminController extends ControllerBase {
 
     }).catch(function (err) {
       this.handleError(res, err, "An error occured when creating the table [product]");
-    });;
+    });
   }
 
   createProduct = function (req: Request, res: Response) {
