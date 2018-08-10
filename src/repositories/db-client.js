@@ -1,19 +1,45 @@
-import { Client } from 'pg/lib';
+import Sequelize, { STRING } from 'sequelize';
 
-const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true,
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: true
+    }
 });
 
-export function getStuff() {
-    console.log("get stuff from db..");
-    client.connect();
-
-    client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
-    if (err) throw err;
-    for (let row of res.rows) {
-        console.log(JSON.stringify(row));
+const Product = sequelize.define('product', {
+    type: {
+        type: STRING
+    },
+    name: {
+        type: STRING
+    },
+    description: {
+        type: STRING
     }
-    client.end();
+});
+
+export function createDb() {
+    // Test connection
+    // sequelize
+    //     .authenticate()
+    //     .then(() => {
+    //         console.log('Connection has been established successfully.');
+    //     })
+    //     .catch(err => {
+    //         console.error('Unable to connect to the database:', err);
+    //     });
+
+    Product.sync({force: true}).then(() => {
+        console.log("product table created");
     });
+}
+
+export function addProduct(product) {
+    return Product.create(product);
+}
+
+export function getStuff() {
+
 }
