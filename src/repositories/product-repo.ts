@@ -1,37 +1,9 @@
-import { STRING, DECIMAL, BOOLEAN } from 'sequelize';
 import Repo from './repo';
+import { productModel } from './models';
 
 class ProductRepo extends Repo {
 
-    private Product = this.sequelize.define('product', {
-        type: {
-            type: STRING
-        },
-        name: {
-            type: STRING
-        },
-        description: {
-            type: STRING
-        },
-        description2: {
-            type: STRING
-        },
-        price: {
-            type: DECIMAL
-        },
-        taxClass: { /* standard, coffee */
-            type: STRING
-        },
-        isActive: {
-            type: BOOLEAN
-        },
-        isInStock: {
-            type: BOOLEAN
-        },
-        imageKey: {
-            type: STRING
-        }
-    });
+    private Product = this.sequelize.define('product', productModel);
 
     createTable = function() {
         return this.Product.sync({force: true}); // todo: force only during initial development...
@@ -41,22 +13,38 @@ class ProductRepo extends Repo {
         return this.Product.findById(productId);
     }
 
+    getProducts = function (filter) {
+        return this.Product.findAll({where:filter});
+    }
+
     createProduct = function(product) {
-        return this.Product.create({
+        return this.Product.create(this.mapToDbModel(product));
+    }
+
+    updateProduct = function(productId, product) {
+        return this.Product.update(
+            this.mapToDbModel(product),
+            {
+                returning: true,
+                where: {id: productId}
+            }
+        );
+    }
+
+    mapToDbModel = function(product) {
+        return {
             type: product.type,
+            code: product.code,
             name: product.name,
             description: product.description,
             description2: product.description2,
+            infoUrl: product.infoUrl,
             price: product.price,
-            taxClass: product.taxClass,
+            mva: product.mva,
             isActive: product.isActive,     // todo: Set in seperate function?
             isInStock: product.isInStock,   // todo: Set in seperate function?
             imageKey: product.imageKey
-        });
-    }
-
-    updateProduct = function(product) {
-        
+        };
     }
 }
 

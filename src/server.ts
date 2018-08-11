@@ -2,7 +2,7 @@
  * Start api with command: 'npm run dev'
  */
 
-import app from "./app";
+import app from './app';
 
 const PORT = process.env.PORT || 5002;
 
