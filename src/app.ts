@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Set allowed origin 
 app.use(function (req: Request, res: Response, next: any) {
     res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+    res.setHeader('Access-Control-Allow-Headers', 'content-type');
     next();
 });
 
@@ -48,12 +49,17 @@ function onOrderCreated(req: Request, res: Response, next: any) {
 
 // Controllers (route handlers)
 import adminController from './controllers/admin';
+import authController from './controllers/auth';
 import productController from './controllers/product';
 
 // Admin routes
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
 
 // Main routes
+app.post("/api/authenticate", authController.authenticate);
+app.get("/api/users", authController.getUsers);
+app.post("/api/users", authController.registerUser);
+
 app.get("/api/products", productController.getProducts);
 app.get("/api/products/:id", productController.getProduct);
 app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);

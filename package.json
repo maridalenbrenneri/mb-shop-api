@@ -15,9 +15,12 @@
     },
     "dependencies": {
         "@types/node": "^10.5.6",
+        "bcryptjs": "^2.4.3",
         "dotenv": "^6.0.0",
+        "email-validator": "^2.0.4",
         "express": "^4.16.3",
         "foreman": "3.0.1",
+        "jsonwebtoken": "^8.3.0",
         "nodemon": "^1.18.3",
         "pg": "^7.4.3",
         "sequelize": "^4.38.0",

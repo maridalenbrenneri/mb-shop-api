@@ -1,12 +1,13 @@
 import { STRING, DECIMAL, BOOLEAN } from 'sequelize';
 
 export const userModel = {
-    providerId: { type: STRING },
-    provider: { type: STRING },     // wordpress, etc.
-    role: { type: STRING },         // customer, store-manager, admin 
-    givenName: { type: STRING },
-    familyName: { type: STRING },
-    email: { type: STRING }
+    email: { type: STRING, unique: true },
+    username: { type: STRING, unique: true },
+    password: { type: STRING, allowNull: false },
+    role: { type: STRING, allowNull: false },         // customer, store-manager, admin 
+    givenName: { type: STRING, allowNull: false },
+    familyName: { type: STRING, allowNull: false },
+    phone: { type: STRING }
 }
 
 export const productModel = {

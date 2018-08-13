@@ -1,12 +1,12 @@
-import Repo from './repo';
+import BaseRepo from './base-repo';
 import { productModel } from './models';
 
-class ProductRepo extends Repo {
+class ProductRepo extends BaseRepo {
 
     private Product = this.sequelize.define('product', productModel);
 
-    createTable = function() {
-        return this.Product.sync({force: true}); // todo: force only during initial development...
+    createTable = function(forceCreate) {
+        return this.Product.sync({force: forceCreate}); // todo: force only during initial development...
     }
 
     getProduct = function (productId: Number) {

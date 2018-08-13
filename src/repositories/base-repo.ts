@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-class Repo {
+class BaseRepo {
     protected sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
         protocol: 'postgres',
@@ -10,4 +10,4 @@ class Repo {
     });
 }
 
-export default Repo;
+export default BaseRepo;
