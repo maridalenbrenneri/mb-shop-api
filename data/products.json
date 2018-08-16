@@ -1,0 +1,13 @@
+{
+    "type": "coffee",
+    "code": "KE",
+    "name": "Kenya (KE) – El Bosque",
+    "description": "Good stuff from Kenya",
+    "description2": "Bringebær | Nektarin | Pasjonsfrukt | Floral",
+    "price": 78.2,
+    "mva": 15,
+    "isActive": "asdasdad",
+    "isInStock": true,
+    "imageKey": null,
+    "infoUrl": null
+}

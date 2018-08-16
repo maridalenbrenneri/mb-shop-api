@@ -7,8 +7,6 @@ import UserRepo from "../repositories/user-repo";
 
 class AuthController extends ControllerBase {
 
-    fake_token = 'FAKE_TOKEN_IS_NICE';
-
     authenticate = function (req: Request, res: Response) {
 
         UserRepo.getUserByEmail(req.body.email).then(user => {
@@ -18,14 +16,15 @@ class AuthController extends ControllerBase {
 
             if(req.body.password == user.password) { // todo: bcrypt...
 
-                let token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+                let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
                     expiresIn: 86400 // expires in 24 hours
                 });
 
                 return res.send({
                     token: token,
-                    user: user
-                })
+                    givenName: user.givenName,
+                    email: user.email
+                });
             }
 
             return res.status(401).send();
@@ -36,11 +35,37 @@ class AuthController extends ControllerBase {
         });
     }
 
-    registerUser  = function (req: Request, res: Response) {
+    getMe = function (req: Request, res: Response) {
+
+        let token = req.headers['x-access-token'];
+        if (!token) {
+            return res.status(401).send('No token provided.');
+        }
+
+        jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
+            if (err) {
+                return res.status(500).send('Failed to authenticate token.');
+            }
+
+            UserRepo.getUser(decoded.id).then(user => {
+                if(!user) {
+                    return res.status(404).send(`User ${req.body.email} was not found`);
+                }
+    
+                return res.send(user);
+        
+            }).catch(function (err) {
+                logger.error(err);
+                return res.status(500).send({error: "An error occured when getting the users"});
+            });
+        });
+    }
+
+    registerUser = function (req: Request, res: Response) {
 
         // todo: check auth if role != customer
 
-         // todo: bcrypt password...
+        // todo: bcrypt password...
 
         UserRepo.createUser(req.body).then(user => {
             return res.send(user);

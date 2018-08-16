@@ -36,7 +36,7 @@ class ProductController {
 
     }).catch(function (err) {
       logger.error(err);
-      res.status(500).send({error: "An error occured when getting the products"});
+      res.status(500).send({error: "An error occured when getting the products: "  + err});
     });
   }
 
@@ -52,7 +52,7 @@ class ProductController {
     
     }).catch(function (err) {
       logger.error(err);
-      res.status(500).send({error: "An error occured when creating the product"});
+      res.status(500).send({error: "An error occured when creating the product: " + err});
     });
   }
 
@@ -76,7 +76,7 @@ class ProductController {
         // todo: handle 400 err
 
         logger.error(err);
-        res.status(500).send({error: "An error occured when updating the product"});
+        res.status(500).send({error: "An error occured when updating the product: " +  + err});
       });
   }
 }
