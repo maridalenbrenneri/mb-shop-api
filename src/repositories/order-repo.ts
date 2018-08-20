@@ -22,18 +22,16 @@ class OrderRepo extends BaseRepo {
     }
 
     mapToDbModel = function(order) {
-        console.log("order " + JSON.stringify(order));
-        console.log("customer " + JSON.stringify(order.customer));
+        // console.log("order " + JSON.stringify(order));
+        // console.log("customer " + JSON.stringify(order.customer));
       //  console.log("givenName: " + order.customer.givenName);
-        let json = JSON.stringify(order.customer);
+        let customer_json = JSON.stringify(order.customer);
+        let items_json = JSON.stringify(order.items);
 
         return {
             status: 'created',
-            // customerId: `${order.id}`,
-            // customerName: `${order.givenName} ${order.familyName}`,
-            // customerEmail: `${order.email}`,
-            customer: json,
-            items: order.items
+            customer: customer_json,
+            items: items_json
         };
     }
 }

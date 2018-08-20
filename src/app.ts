@@ -66,6 +66,7 @@ app.post("/api/users", authController.registerUser);
 app.get("/api/products", productController.getProducts);
 app.get("/api/products/:id", productController.getProduct);
 app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);
+app.post("/api/products/create-many", isUserInAdmin, productController.createProducts);
 app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
 
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);

@@ -21,6 +21,16 @@ class ProductRepo extends BaseRepo {
         return this.Product.create(this.mapToDbModel(product));
     }
 
+    createProducts = function(products) {
+        let dbModels = [];
+
+        for(let product of products) {
+            dbModels.push(this.mapToDbModel(product));
+        };
+
+        return this.Product.bulkCreate(dbModels);
+    }
+
     updateProduct = function(productId, product) {
         return this.Product.update(
             this.mapToDbModel(product),

@@ -1,4 +1,4 @@
-import { INTEGER, JSON, STRING, DECIMAL, BOOLEAN } from 'sequelize';
+import { INTEGER, JSONB, STRING, DECIMAL, BOOLEAN } from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
@@ -28,6 +28,6 @@ export const orderModel = {
     // customerId: { type: INTEGER },
     // customerName: { type: STRING },
     // customerEmail: { type: STRING },
-    customer: { type: JSON },
-    items: { type: JSON }
+    customer: { type: JSONB },
+    items: { type: JSONB }
 }
