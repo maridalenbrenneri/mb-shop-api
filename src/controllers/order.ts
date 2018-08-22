@@ -1,7 +1,6 @@
-
 import { Response, Request } from "express";
 import orderRepo  from '../repositories/order-repo';
-import logger from '../utils/logger';
+import orderService from "../services/order-service";
 
 class OrderController {
 
@@ -11,50 +10,76 @@ class OrderController {
   getOrder = function (req: Request, res: Response, next: any) {
 
     orderRepo.getOrder(req.params.id).then(order => {
-      if(!order) {
-        res.status(404).send("Order was not found.");  
-        return;
-      } 
+      if (!order) {
+        return res.status(404).send("Order was not found.");
+      }
 
       res.send(order);
-
-    }).catch(function (err) {
-      logger.error(err);
-      res.status(500).send({error: "An error occured when getting the order: " +  + err});
     });
+
   }
 
   /**
    * GET /orders
    */
-  getOrders = function (req: Request, res: Response) {
+  getOrders (req: Request, res: Response) {
 
     let filter = { };
 
     orderRepo.getOrders(filter).then(orders => {
       res.send(orders);
-
-    }).catch(function (err) {
-      logger.error(err);
-      res.status(500).send({error: "An error occured when getting the orders: " +  + err});
     });
+
+  }
+
+  /**
+   * GET /orders/mine
+   */
+  getMyOrders (req: Request, res: Response) {
+
+    let filter = { 
+      userId: req.user.id
+    };
+
+    orderRepo.getOrders(filter).then(orders => {
+      res.send(orders);
+    });
+
   }
 
   /**
    * POST /orders
    */
-  createOrder = function (req: Request, res: Response) {
+  createOrder (req: Request, res: Response) {
 
     // todo: validate body content...
 
     orderRepo.createOrder(req.body).then(order => {
       res.send(order);
-    
-    }).catch(function (err) {
-      logger.error(err);
-      res.status(500).send({error: "An error occured when creating the order: "  + err});
     });
+
   }
+
+  /**
+   * POST /orders/:id/complete
+   */
+  completeOrder (req: Request, res: Response, next: any) {
+
+    return orderService.updateOrderStatus(req.params.id, 'completed', res);
+
+  }
+
+  /**
+   * POST /orders/:id/completeAndShip
+   */
+  completeAndShipOrder (req: Request, res: Response) {
+
+    // todo: call shipping service => then =>
+
+    return orderService.updateOrderStatus(req.params.id, 'completed', res);
+
+  }
+
 }
 
 export default new OrderController();

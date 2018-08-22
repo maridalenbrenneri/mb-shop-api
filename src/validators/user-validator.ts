@@ -12,6 +12,15 @@ class UserValidator {
         return EmailValidator.validate(username) && 
                 password && password.length > 5; 
     }
+
+    static validateOrderStatus(status: String) {
+        
+        return true;
+
+        // todo ...
+        // let statuses = ['created', 'payment-failed', 'in-process', 'completed', 'cancelled', 'deleted'];
+        // return statuses.includes(status);
+    }
 }
 
 export default UserValidator;

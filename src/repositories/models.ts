@@ -1,4 +1,4 @@
-import { INTEGER, JSONB, STRING, DECIMAL, BOOLEAN } from 'sequelize';
+import { JSONB, STRING, DECIMAL, BOOLEAN } from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
@@ -6,7 +6,9 @@ export const userModel = {
     role: { type: STRING, allowNull: false },         // customer, store-manager, admin 
     givenName: { type: STRING, allowNull: false },
     familyName: { type: STRING, allowNull: false },
-    phone: { type: STRING }
+    phone: { type: STRING },
+    isActive: { type: BOOLEAN, allowNull: false },
+    addresses: { type: JSONB }
 }
 
 export const productModel = {
@@ -25,9 +27,6 @@ export const productModel = {
 
 export const orderModel = {
     status: { type: STRING },
-    // customerId: { type: INTEGER },
-    // customerName: { type: STRING },
-    // customerEmail: { type: STRING },
     customer: { type: JSONB },
     items: { type: JSONB }
 }

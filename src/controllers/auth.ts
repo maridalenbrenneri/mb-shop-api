@@ -1,12 +1,14 @@
 import { Response, Request } from "express";
 import Sequelize from 'sequelize';
 import * as jwt from 'jsonwebtoken';
-import logger from '../utils/logger';
 import ControllerBase from './controller-base';
 import UserRepo from "../repositories/user-repo";
 
 class AuthController extends ControllerBase {
 
+    /**
+     * 
+     */
     authenticate = function (req: Request, res: Response) {
 
         UserRepo.getUserByEmail(req.body.email).then(user => {
@@ -16,7 +18,12 @@ class AuthController extends ControllerBase {
 
             if(req.body.password == user.password) { // todo: bcrypt...
 
-                let token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+                let userInfo = { 
+                    id: user.id,
+                    role: user.role
+                };
+
+                let token = jwt.sign(userInfo, process.env.JWT_SECRET, {
                     expiresIn: 86400 // expires in 24 hours
                 });
 
@@ -29,38 +36,25 @@ class AuthController extends ControllerBase {
 
             return res.status(401).send();
 
-        }).catch(function (err) {
-            logger.error(err);
-            return res.status(500).send({error: "An error occured when authenticating the user"});
         });
     }
 
+    /**
+     * GET /users/me
+     */
     getMe = function (req: Request, res: Response) {
-
-        let token = req.headers['x-access-token'];
-        if (!token) {
-            return res.status(401).send('No token provided.');
-        }
-
-        jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
-            if (err) {
-                return res.status(500).send('Failed to authenticate token.');
+        UserRepo.getUser(req.user.id).then(user => {
+            if(!user) {
+                return res.status(404).send(`User ${req.body.email} was not found`);
             }
 
-            UserRepo.getUser(decoded.id).then(user => {
-                if(!user) {
-                    return res.status(404).send(`User ${req.body.email} was not found`);
-                }
-    
-                return res.send(user);
-        
-            }).catch(function (err) {
-                logger.error(err);
-                return res.status(500).send({error: "An error occured when getting the users"});
-            });
+            return res.send(user);
         });
     }
 
+    /**
+     * POST /api/users
+     */
     registerUser = function (req: Request, res: Response) {
 
         // todo: check auth if role != customer
@@ -72,23 +66,18 @@ class AuthController extends ControllerBase {
           
         }).catch(Sequelize.ValidationError, function (err) {
             return res.status(422).send(err.errors);
-
-        }).catch(function (err) {
-            logger.error(err);
-            return res.status(500).send({error: "An error occured when registering the user"});
         });
     }
 
+    /**
+     * 
+     */
     getUsers = function (req: Request, res: Response) {
 
         let filter = { };
     
         UserRepo.getUsers(filter).then(users => {
             res.send(users);
-    
-        }).catch(function (err) {
-          logger.error(err);
-          res.status(500).send({error: "An error occured when getting the users"});
         });
     }
 }

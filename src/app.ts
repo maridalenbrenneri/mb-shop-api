@@ -1,33 +1,35 @@
 import * as express from "express";
 import { Response, Request } from "express";
 import * as bodyParser from "body-parser";
+import * as jwt from 'jsonwebtoken';
+
+import logger from "./utils/logger";
+import adminController from './controllers/admin';
+import authController from './controllers/auth';
+import productController from './controllers/product';
+import orderController from './controllers/order';
 
 import dotenv = require("dotenv");
 dotenv.config();
 
-const app = express();
-
-app.set("port", process.env.PORT || 5002);
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Set allowed origin 
-app.use(function (req: Request, res: Response, next: any) {
-    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
-    res.setHeader('Access-Control-Allow-Headers', ['content-type', 'x-access-token']);
-    next();
-});
-
-// Validate api key
-app.use(function (req: Request, res: Response, next: any) : Boolean {
-    var provider = req.get('X-Header-Provider');
-    return next();
-});
-
 function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
+    let token = req.headers['x-access-token'];
 
-    return next();
+    if (!token) {
+        return res.status(401).send('No token provided.');
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
+        if (err || !decoded) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        req.user = {
+            id: decoded.id
+        }
+
+        return next();
+    });
 }
 
 function isUserInStoreManagerOrAbove(req: Request, res: Response, next: any) : Boolean {
@@ -48,14 +50,15 @@ function onOrderCreated(req: Request, res: Response, next: any) {
     next();
 }
 
-// Controllers (route handlers)
-import adminController from './controllers/admin';
-import authController from './controllers/auth';
-import productController from './controllers/product';
-import orderController from './controllers/order';
+const app = express();
+
+app.set("port", process.env.PORT || 5002);
+
+/*** API ***/
 
 // Admin routes
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
+app.post("/api/products/create-many", isUserInAdmin, productController.createProducts);
 
 // Main routes
 app.post("/api/authenticate", authController.authenticate);
@@ -65,16 +68,47 @@ app.post("/api/users", authController.registerUser);
 
 app.get("/api/products", productController.getProducts);
 app.get("/api/products/:id", productController.getProduct);
+
+app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
+app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
+app.post("/api/orders", isAuthenticated, orderController.createOrder);
+
+// Product management
 app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);
-app.post("/api/products/create-many", isUserInAdmin, productController.createProducts);
 app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
 
+// Order management
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
-app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
-app.post("/api/orders", isAuthenticated, orderController.createOrder);
-// app.put("/api/orders/:id", isAuthenticated, orderController.getOrders);
+app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
+app.post("/api/orders/:id/completeAndShip", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
 
-console.log('NODE_ENV: ' + process.env.NODE_ENV);
+/*** END API ***/ 
+
+/*** MIDDLEWARE ***/
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Set allowed origin 
+app.use(function (req: Request, res: Response, next: any) {
+    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+    res.setHeader('Access-Control-Allow-Headers', ['content-type', 'x-access-token']);
+    next();
+});
+
+// Validate api key
+app.use(function (req: Request, res: Response, next: any) : Boolean {
+    var provider = req.get('X-Header-Provider');
+    return next();
+});
+
+// Error handling
+app.use(function (err, req, res, next) {
+    logger.error(err.message);
+    return res.status(500).send({error: err.message});
+ });
+
+ console.log('NODE_ENV: ' + process.env.NODE_ENV);
 // console.log('DATABASE_URL: ' + process.env.DATABASE_URL);
 
 export default app;

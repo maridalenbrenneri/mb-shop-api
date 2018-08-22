@@ -21,17 +21,23 @@ class OrderRepo extends BaseRepo {
         return this.Order.create(this.mapToDbModel(order));
     }
 
-    mapToDbModel = function(order) {
-        // console.log("order " + JSON.stringify(order));
-        // console.log("customer " + JSON.stringify(order.customer));
-      //  console.log("givenName: " + order.customer.givenName);
-        let customer_json = JSON.stringify(order.customer);
-        let items_json = JSON.stringify(order.items);
+    updateOrderStatus = function(orderId, newStatus) {
+        return this.Order.update(
+            {
+                status: newStatus
+            },
+            {
+                returning: true,
+                where: { id: orderId }
+            }
+        );
+    }
 
+    mapToDbModel = function(order) {
         return {
             status: 'created',
-            customer: customer_json,
-            items: items_json
+            customer: JSON.stringify(order.customer),
+            items: JSON.stringify(order.items)
         };
     }
 }
