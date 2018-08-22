@@ -12,7 +12,7 @@ class AdminController extends ControllerBase {
     const forceCreate = true; // process.env.FORCE_DB_TABLES
 
     Promise.all([
-      UserRepo.createTable(false), 
+      UserRepo.createTable(true), 
       ProductRepo.createTable(false),
       OrderRepo.createTable(true)
 

@@ -2,15 +2,10 @@ import * as express from "express";
 import { Response, Request } from "express";
 import * as bodyParser from "body-parser";
 import * as jwt from 'jsonwebtoken';
-
 import logger from "./utils/logger";
-import adminController from './controllers/admin';
-import authController from './controllers/auth';
-import productController from './controllers/product';
-import orderController from './controllers/order';
 
-import dotenv = require("dotenv");
-dotenv.config();
+// Load environemnt variables
+require('dotenv').config();
 
 function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
     let token = req.headers['x-access-token'];
@@ -52,7 +47,28 @@ function onOrderCreated(req: Request, res: Response, next: any) {
 
 const app = express();
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Set allowed origin 
+app.use(function (req: Request, res: Response, next: any) {
+    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+    res.setHeader('Access-Control-Allow-Headers', ['content-type', 'x-access-token']);
+    next();
+});
+
+// Validate api key
+app.use(function (req: Request, res: Response, next: any) : Boolean {
+    var provider = req.get('X-Header-Provider');
+    return next();
+});
+
 app.set("port", process.env.PORT || 5002);
+
+import adminController from './controllers/admin';
+import authController from './controllers/auth';
+import productController from './controllers/product';
+import orderController from './controllers/order';
 
 /*** API ***/
 
@@ -83,24 +99,6 @@ app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderControlle
 app.post("/api/orders/:id/completeAndShip", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
 
 /*** END API ***/ 
-
-/*** MIDDLEWARE ***/
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Set allowed origin 
-app.use(function (req: Request, res: Response, next: any) {
-    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
-    res.setHeader('Access-Control-Allow-Headers', ['content-type', 'x-access-token']);
-    next();
-});
-
-// Validate api key
-app.use(function (req: Request, res: Response, next: any) : Boolean {
-    var provider = req.get('X-Header-Provider');
-    return next();
-});
 
 // Error handling
 app.use(function (err, req, res, next) {

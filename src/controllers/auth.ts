@@ -61,6 +61,10 @@ class AuthController extends ControllerBase {
 
         // todo: bcrypt password...
 
+        let user = req.body;
+        user.role = 'customer';
+        user.isActive = true;
+        
         UserRepo.createUser(req.body).then(user => {
             return res.send(user);
           

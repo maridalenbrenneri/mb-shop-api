@@ -42,7 +42,8 @@ class UserRepo extends BaseRepo {
             givenName: user.givenName,
             familyName: user.familyName,
             phone: user.phone,
-            role: user.role
+            role: user.role,
+            isActive: user.isActive
         };
     }
 }
