@@ -69,6 +69,7 @@ import adminController from './controllers/admin';
 import authController from './controllers/auth';
 import productController from './controllers/product';
 import orderController from './controllers/order';
+import subscriptionController from './controllers/subscription';
 
 /*** API ***/
 
@@ -97,6 +98,9 @@ app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.upda
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
 app.post("/api/orders/:id/completeAndShip", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
+
+// Subscription management
+app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
 
 /*** END API ***/ 
 
