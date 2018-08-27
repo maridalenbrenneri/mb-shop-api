@@ -1,4 +1,4 @@
-import { JSONB, STRING, DECIMAL, BOOLEAN } from 'sequelize';
+import { JSONB, STRING, DECIMAL, BOOLEAN, INTEGER, DATEONLY } from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
@@ -12,21 +12,32 @@ export const userModel = {
 }
 
 export const productModel = {
-    type: { type: STRING },
-    code: { type: STRING },
-    name: { type: STRING },
+    category: { type: STRING, allowNull: false },
+    code: { type: STRING, allowNull: false },
+    name: { type: STRING, allowNull: false },
     description: { type: STRING },
     description2: { type: STRING },
     infoUrl: { type: STRING },
-    price: { type: DECIMAL },
-    mva: { type: DECIMAL }, /* percent */
-    isActive: { type: BOOLEAN },
-    isInStock: { type: BOOLEAN },
-    imageKey: { type: STRING }
+    price: { type: DECIMAL, allowNull: false },
+    taxRate: { type: DECIMAL, allowNull: false },
+    isActive: { type: BOOLEAN, allowNull: false },
+    isInStock: { type: BOOLEAN, allowNull: false },
+    portfolioImageKey: { type: STRING }
 }
 
 export const orderModel = {
-    status: { type: STRING },
-    customer: { type: JSONB },
-    items: { type: JSONB }
+    status: { type: STRING, allowNull: false },
+    customer: { type: JSONB, allowNull: false },
+    items: { type: JSONB, allowNull: false }
+}
+
+export const coffeeSubscriptionModel = {
+    parentOrderId: { type: INTEGER, allowNull: false },
+    status: { type: STRING, allowNull: false},
+    frequency: { type: INTEGER, allowNull: false },
+    quantity: { type: INTEGER, allowNull: false },
+    firstDeliveryDate: { type: DATEONLY, allowNull: false },
+    lastDeliveryDate: { type: DATEONLY },
+    endDate: { type: DATEONLY },
+    isGiftSubscription: { type: BOOLEAN, allowNull: false }
 }

@@ -43,17 +43,17 @@ class ProductRepo extends BaseRepo {
 
     mapToDbModel = function(product) {
         return {
-            type: product.type,
+            category: product.category,
             code: product.code,
             name: product.name,
             description: product.description,
             description2: product.description2,
             infoUrl: product.infoUrl,
             price: product.price,
-            mva: product.mva,
+            taxRate: product.taxRate,
             isActive: product.isActive,     // todo: Set in seperate function?
             isInStock: product.isInStock,   // todo: Set in seperate function?
-            imageKey: product.imageKey
+            portfolioImageKey: product.imageKey
         };
     }
 }

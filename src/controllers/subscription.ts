@@ -1,6 +1,5 @@
 import { Response, Request } from "express";
 import subscriptionService from "../services/subscription-service";
-import { SubscriptionIntervals } from "../constants";
 import logger from '../utils/logger';
 
 class SubscriptionController {
