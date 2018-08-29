@@ -4,17 +4,17 @@ import ProductRepo  from '../repositories/product-repo'
 import UserRepo from "../repositories/user-repo";
 import OrderRepo from "../repositories/order-repo";
 import ControllerBase from './controller-base';
-import CoffeeSubscriptionRepo from "../repositories/coffee-subscription-repo";
+import SubscriptionRepo from "../repositories/subscription-repo";
 
 class AdminController extends ControllerBase {
 
   createTable  = function (req: Request, res: Response) {
 
     Promise.all([
-      UserRepo.createTable(true), 
-      ProductRepo.createTable(true),
+      UserRepo.createTable(false), 
+      ProductRepo.createTable(false),
       OrderRepo.createTable(true),
-      CoffeeSubscriptionRepo.createTable(true)
+      SubscriptionRepo.createTable(true)
 
     ]).then(() => {
       logger.info("Tables created");

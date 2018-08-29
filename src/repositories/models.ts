@@ -31,10 +31,10 @@ export const orderModel = {
     items: { type: JSONB, allowNull: false }
 }
 
-export const coffeeSubscriptionModel = {
+export const subscriptionModel = {
     parentOrderId: { type: INTEGER, allowNull: false },
     status: { type: STRING, allowNull: false},
-    frequency: { type: INTEGER, allowNull: false },
+    frequence: { type: INTEGER, allowNull: false },
     quantity: { type: INTEGER, allowNull: false },
     firstDeliveryDate: { type: DATEONLY, allowNull: false },
     lastDeliveryDate: { type: DATEONLY },

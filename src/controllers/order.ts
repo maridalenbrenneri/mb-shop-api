@@ -52,11 +52,7 @@ class OrderController {
    */
   createOrder (req: Request, res: Response) {
 
-    // todo: validate body content...
-
-    orderRepo.createOrder(req.body).then(order => {
-      res.send(order);
-    });
+    return orderService.createOrder(req.body, res);
 
   }
 

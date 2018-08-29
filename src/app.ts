@@ -11,12 +11,12 @@ function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
     let token = req.headers['x-access-token'];
 
     if (!token) {
-        return res.status(401).send('No token provided.');
+        return res.status(401).send();
     }
 
     jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
         if (err || !decoded) {
-            return res.status(401).send('Unauthorized');
+            return res.status(401).send();
         }
 
         req.user = {
@@ -70,6 +70,7 @@ import authController from './controllers/auth';
 import productController from './controllers/product';
 import orderController from './controllers/order';
 import subscriptionController from './controllers/subscription';
+import { ValidationError } from "./models/validation-error";
 
 /*** API ***/
 
@@ -100,12 +101,18 @@ app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderControlle
 app.post("/api/orders/:id/completeAndShip", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
 
 // Subscription management
+app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
 app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
 
 /*** END API ***/ 
 
 // Error handling
 app.use(function (err, req, res, next) {
+
+    if (err instanceof ValidationError) {
+        return res.status(422).send({validationError: err.message});
+    } 
+
     logger.error(err.message);
     return res.status(500).send({error: err.message});
  });

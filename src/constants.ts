@@ -13,7 +13,7 @@ export class FreightRates {
     static standard_subscription = 30;
 }
 
-export class ProductTypes {
+export class ProductCategories {
     static coffee = 'coffee';
     static coffeeSubscription = 'coffee-subscription';
     static coffeeGiftSubscription = 'coffee-gift-subscription';

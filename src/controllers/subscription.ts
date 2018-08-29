@@ -5,6 +5,18 @@ import logger from '../utils/logger';
 class SubscriptionController {
     
     /**
+     * GET /subacriptions
+     */
+    getSubscriptions = function (req: Request, res: Response) {
+
+        let filter = {  };
+
+        subscriptionService.getSubscriptions(filter).then(products => {
+        res.send(products);
+        });
+    }
+
+    /**
      * GET /subscription/data/delivery-dates
      */
     getNextStandardDeliveryDates = function (req: Request, res: Response, next: any) {
