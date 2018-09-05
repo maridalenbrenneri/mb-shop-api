@@ -6,7 +6,7 @@ export class SubscriptionValidator {
         if(!subscriptionOptions) {
             throw new ValidationError("Subscription options is null");
         }
-        
+
         if(!subscriptionOptions.quantity || subscriptionOptions.quantity < 1 ||  subscriptionOptions.quantity > 6) {
             throw new ValidationError("Subscription quantity is invalid, must be 1 to 6 but was " + subscriptionOptions.quantity);
         }

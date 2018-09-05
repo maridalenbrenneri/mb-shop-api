@@ -1,8 +1,8 @@
+import { Response } from "express";
 import { SubscriptionDateHelper } from './subscription-date-helper';
-import { SubscriptionStatus } from '../constants';
+import { SubscriptionStatus, ProductCategories } from '../constants';
 import subscriptionRepo  from '../repositories/subscription-repo';
 import { SubscriptionValidator } from '../validators/subscription-validator';
-import { SubscriptionOptions } from '../models/subscription-options';
 
 class SubscriptionService {     
 
@@ -10,16 +10,23 @@ class SubscriptionService {
         return subscriptionRepo.getSubscriptions(filter);
     }
 
-    createSubscription(parentOrderId: Number, subscriptionOptions: SubscriptionOptions) {
-        
-        if(!parentOrderId) {
+    createSubscriptionFromOrder(order) {
+        if(!order.id) {
             throw new Error("Subscription doesn't have a parent order");
         }
+
+        const customer = JSON.parse(order.customer);
+        if(!customer || !customer.userId) {
+            throw new Error("Subscription doesn't have a customer");
+        }
+
+        let subscriptionOptions = this.getSubscriptionOptionsFromOrder(order);
 
         SubscriptionValidator.validate(subscriptionOptions);
 
         let subscription = {
-            parentOrderId: parentOrderId,
+            parentOrderId: order.id,
+            userId: customer.userId,
             status: SubscriptionStatus.active,
             frequence: subscriptionOptions.frequence,
             quantity: subscriptionOptions.quantity,
@@ -28,6 +35,18 @@ class SubscriptionService {
         }
 
         return subscriptionRepo.createSubscription(subscription);
+    }
+
+    updateSubscriptionStatus(subscriptionId: Number, newStatus: String, res: Response) {
+
+        return subscriptionRepo.updateSubscriptionStatus(subscriptionId, newStatus).then(function([subscriptionsUpdated, [updatedSubscription]]) {
+
+            if (subscriptionsUpdated === 0) {
+                return res.status(404).send();
+            } 
+        
+            return res.send(updatedSubscription);
+        });
     }
 
     getNextDeliveryDates() : any {
@@ -40,6 +59,19 @@ class SubscriptionService {
            nextMonthlyList: monthlyList,
            nextFortnightlyList: fortnightlyList
         }
+    }
+
+    doesOrderContainSubscription(order) {
+        const items = JSON.parse(order.items);
+        if(!items || items.length === 0) {
+            return false;
+        }
+
+        return items.some(item => item.product.category === ProductCategories.coffeeSubscription);
+    }
+
+    private getSubscriptionOptionsFromOrder(order) {
+        return JSON.parse(order.items).find(item => item.product.category === ProductCategories.coffeeSubscription).productOptions;
     }
 }
 

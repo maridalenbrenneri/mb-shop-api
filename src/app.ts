@@ -8,6 +8,10 @@ import logger from "./utils/logger";
 require('dotenv').config();
 
 function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
+
+    // todo: DEV STUFF - REMOVE!
+  //  return next();
+
     let token = req.headers['x-access-token'];
 
     if (!token) {
@@ -91,6 +95,11 @@ app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
 app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
 app.post("/api/orders", isAuthenticated, orderController.createOrder);
 
+app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
+app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
+app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
+app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
+
 // Product management
 app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);
 app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
@@ -98,11 +107,13 @@ app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.upda
 // Order management
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
-app.post("/api/orders/:id/completeAndShip", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
+app.post("/api/orders/:id/complete-and-ship", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
 
 // Subscription management
 app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
 app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
+app.post("/api/subscriptions/:id/complete-cancel", isUserInStoreManagerOrAbove, subscriptionController.completeCancelSubscription);
+app.post("/api/subscription/engine/create-renewal-orders", isUserInStoreManagerOrAbove, subscriptionController.createRenewalOrders);
 
 /*** END API ***/ 
 

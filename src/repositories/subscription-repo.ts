@@ -8,19 +8,27 @@ class SubscriptionRepo extends BaseRepo {
         return this.Subscription.sync({force: forceCreate});
     }
 
-    getSubscription = function (subscriptionId: Number) {
+    getSubscription = function (subscriptionId: Number){
         return this.Subscription.findById(subscriptionId);
     }
 
     getSubscriptions = function (filter) {
-        return this.Subscription.findAll({where:filter});
+        filter = filter || {};
+        filter.isDeleted = false;
+        
+        return this.Subscription.findAll({
+            where:filter,
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
     }
 
     createSubscription = function(subscription) {
         return this.Subscription.create(subscription);
     }
 
-    updatSubscriptionrStatus = function(subscriptionId, newStatus) {
+    updateSubscriptionStatus = function(subscriptionId, newStatus) {
         return this.Subscription.update(
             {
                 status: newStatus

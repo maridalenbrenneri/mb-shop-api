@@ -11,15 +11,23 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 class Logger {
+    debug = function(message) {
+        console.log("DEBUG " + message);
+        winston_logger.debug(message);
+    };
+
     info = function(message) {
+        console.log("INFO " + message);
         winston_logger.info(message);
     };
 
     warn = function(message) {
+        console.log("WARN " + message);
         winston_logger.warn(message);
     };
 
     error = function(message) {
+        console.log("ERROR " + message);
         winston_logger.error(message);
     };
 }

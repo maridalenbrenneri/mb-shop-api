@@ -1,5 +1,6 @@
 export class Constants {
     static deliveryDay = 2; // Tuesday
+    static subscriptionRenewalPaymentDaysBeforeDelivery = 14;
     static minPasswordLength = 5;
 }
 
@@ -19,9 +20,14 @@ export class ProductCategories {
     static coffeeGiftSubscription = 'coffee-gift-subscription';
 }
 
-export class SubscriptionIntervals {
-    static monthly = 'monthly';
-    static fortnightly = 'fortnightly';
+export class OrderTypes {
+    static normal: 'normal';
+    static renewal: 'renewal';
+}
+
+export class SubscriptionFrequence {
+    static monthly = 1;
+    static fortnightly = 2;
 }
 
 export class SubscriptionStatus {

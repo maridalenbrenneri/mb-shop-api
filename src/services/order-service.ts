@@ -2,7 +2,6 @@ import { Response } from "express";
 import orderRepo  from '../repositories/order-repo';
 import { OrderValidator } from '../validators/order-validator';
 import subscriptionService from "./subscription-service";
-import { ProductCategories } from '../constants';
 import { ValidationError } from "../models/validation-error";
 
 class OrderService {
@@ -12,8 +11,8 @@ class OrderService {
         
         return orderRepo.createOrder(order).then(createdOrder => {
 
-            if (this.doesOrderContainSubscription(order)) {
-                return subscriptionService.createSubscription(createdOrder.id, this.getSubscriptionOptionsFromOrder(order)).then(() => {
+            if (subscriptionService.doesOrderContainSubscription(createdOrder)) {
+                return subscriptionService.createSubscriptionFromOrder(createdOrder).then(() => {
                     return res.send(createdOrder);
                 });
             
@@ -30,7 +29,12 @@ class OrderService {
         });
     };
 
+    getOrders(filter = {}) {
+        return orderRepo.getOrders(filter);
+    }
+
     updateOrderStatus(orderId: Number, newStatus: String, res: Response) {
+         
         return orderRepo.updateOrderStatus(orderId, newStatus).then(function([ ordersUpdated, [updatedOrder] ]) {
 
             if (ordersUpdated === 0) {
@@ -39,14 +43,6 @@ class OrderService {
       
             return res.send(updatedOrder);
         });
-    }
-
-    private doesOrderContainSubscription(order) {
-        return order.items.some(item => item.product.category === ProductCategories.coffeeSubscription);
-    }
-
-    private getSubscriptionOptionsFromOrder(order) {
-        return order.items.find(item => item.product.category === ProductCategories.coffeeSubscription).productOptions;
     }
 }
 

@@ -73,6 +73,24 @@ export class SubscriptionDateHelper {
         return dates;
     }
 
+    static isDateFirstDeliveryOfMonth(date: Date) {
+        let firstDeliverDateOfMonth = moment(date).startOf('month').day(Constants.deliveryDay);
+        return firstDeliverDateOfMonth.date() === moment(date).date();
+    }
+
+    static getNextCreateRenewalDate(date: Date, daysBeforeDeliveryDate: Number) : Date {
+        let momentDate = moment(date).add(-daysBeforeDeliveryDate, 'd')
+        return momentDate.toDate();
+    }
+
+    static isTodayBeforeDate(date: Date) {
+        return moment() < moment(date);
+    }
+
+    static isSameDate(date1: Date, date2: Date) {
+        return moment(date1).date() === moment(date2).date();
+    }
+
     private static getAllDatesForDeliveryWeekdayInMonth(date): Array<any> {
 
         if(!Constants.deliveryDay) {

@@ -24,12 +24,9 @@ class OrderController {
    */
   getOrders (req: Request, res: Response) {
 
-    let filter = { };
-
-    orderRepo.getOrders(filter).then(orders => {
-      res.send(orders);
+    orderService.getOrders().then(orders => {
+      return res.send(orders);
     });
-
   }
 
   /**
@@ -61,12 +58,14 @@ class OrderController {
    */
   completeOrder (req: Request, res: Response, next: any) {
 
+    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
+
     return orderService.updateOrderStatus(req.params.id, 'completed', res);
 
   }
 
   /**
-   * POST /orders/:id/completeAndShip
+   * POST /orders/:id/complete-and-ship
    */
   completeAndShipOrder (req: Request, res: Response) {
 

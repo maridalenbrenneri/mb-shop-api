@@ -18,6 +18,9 @@ class UserRepo extends BaseRepo {
     }
 
     getUsers = function (filter) {
+        filter = filter || {};
+        filter.isDeleted = false;
+
         return this.User.findAll({where:filter});
     }
 

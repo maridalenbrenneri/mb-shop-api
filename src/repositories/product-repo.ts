@@ -14,6 +14,9 @@ class ProductRepo extends BaseRepo {
     }
 
     getProducts = function (filter) {
+        filter = filter || {};
+        filter.isDeleted = false;
+        
         return this.Product.findAll({where:filter});
     }
 

@@ -8,7 +8,8 @@ export const userModel = {
     familyName: { type: STRING, allowNull: false },
     phone: { type: STRING },
     isActive: { type: BOOLEAN, allowNull: false },
-    addresses: { type: JSONB }
+    addresses: { type: JSONB },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const productModel = {
@@ -22,22 +23,28 @@ export const productModel = {
     taxRate: { type: DECIMAL, allowNull: false },
     isActive: { type: BOOLEAN, allowNull: false },
     isInStock: { type: BOOLEAN, allowNull: false },
-    portfolioImageKey: { type: STRING }
+    portfolioImageKey: { type: STRING },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const orderModel = {
     status: { type: STRING, allowNull: false },
+    type: { type: STRING, allowNull: false },
+    subscriptionId: { type: INTEGER },
     customer: { type: JSONB, allowNull: false },
-    items: { type: JSONB, allowNull: false }
+    items: { type: JSONB, allowNull: false },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const subscriptionModel = {
     parentOrderId: { type: INTEGER, allowNull: false },
+    userId: { type: INTEGER, allowNull: false },
     status: { type: STRING, allowNull: false},
     frequence: { type: INTEGER, allowNull: false },
     quantity: { type: INTEGER, allowNull: false },
     firstDeliveryDate: { type: DATEONLY, allowNull: false },
     lastDeliveryDate: { type: DATEONLY },
     endDate: { type: DATEONLY },
-    isGiftSubscription: { type: BOOLEAN, allowNull: false }
+    isGiftSubscription: { type: BOOLEAN, allowNull: false },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }

@@ -11,8 +11,8 @@ class AdminController extends ControllerBase {
   createTable  = function (req: Request, res: Response) {
 
     Promise.all([
-      UserRepo.createTable(false), 
-      ProductRepo.createTable(false),
+      UserRepo.createTable(true), 
+      ProductRepo.createTable(true),
       OrderRepo.createTable(true),
       SubscriptionRepo.createTable(true)
 

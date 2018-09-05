@@ -14,11 +14,24 @@ class OrderRepo extends BaseRepo {
     }
 
     getOrders = function (filter) {
-        return this.Order.findAll({where:filter});
+        filter = filter || {};
+        filter.isDeleted = false;
+
+        return this.Order.findAll({
+            where:filter,
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
     }
 
     createOrder = function(order) {
         return this.Order.create(this.mapToDbModel(order));
+    }
+
+    createOrders(orders: any): any {
+        let dbModels = orders.map(order => this.mapToDbModel(order));
+        return this.Order.bulkCreate(dbModels);
     }
 
     updateOrderStatus = function(orderId, newStatus) {
@@ -36,6 +49,7 @@ class OrderRepo extends BaseRepo {
     mapToDbModel = function(order) {
         return {
             status: 'created',
+            type: order.type,
             customer: JSON.stringify(order.customer),
             items: JSON.stringify(order.items)
         };
