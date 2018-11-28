@@ -57,6 +57,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Set allowed origin 
 app.use(function (req: Request, res: Response, next: any) {
     res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS')
     res.setHeader('Access-Control-Allow-Headers', ['content-type', 'x-access-token']);
     next();
 });
@@ -71,6 +72,7 @@ app.set("port", process.env.PORT || 5002);
 
 import adminController from './controllers/admin';
 import authController from './controllers/auth';
+import customerController from './controllers/customer';
 import productController from './controllers/product';
 import orderController from './controllers/order';
 import subscriptionController from './controllers/subscription';
@@ -82,34 +84,37 @@ import { ValidationError } from "./models/validation-error";
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
 app.post("/api/products/create-many", isUserInAdmin, productController.createProducts);
 
-// Main routes
+// User and auth
 app.post("/api/authenticate", authController.authenticate);
 app.get("/api/users/me", isAuthenticated, authController.getMe);
 app.get("/api/users", isUserInStoreManagerOrAbove, authController.getUsers);
 app.post("/api/users", authController.registerUser);
 
+// Customers
+app.get("/api/customers", customerController.getCustomers);
+app.get("/api/customers/:id", customerController.getCustomer);
+app.post("/api/customers", isUserInStoreManagerOrAbove, customerController.createCustomer);
+app.put("/api/customers/:id", isUserInStoreManagerOrAbove, customerController.updateCustomer);
+
+// Products
 app.get("/api/products", productController.getProducts);
 app.get("/api/products/:id", productController.getProduct);
-
-app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
-app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
-app.post("/api/orders", isAuthenticated, orderController.createOrder);
-
-app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
-app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
-app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
-app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
-
-// Product management
 app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);
 app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
 
-// Order management
+// Orders
+app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
+app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
+app.post("/api/orders", isAuthenticated, orderController.createOrder);
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
 app.post("/api/orders/:id/complete-and-ship", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
 
-// Subscription management
+// Subscriptions
+app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
+app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
+app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
+app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
 app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
 app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
 app.post("/api/subscriptions/:id/complete-cancel", isUserInStoreManagerOrAbove, subscriptionController.completeCancelSubscription);

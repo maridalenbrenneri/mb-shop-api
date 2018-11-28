@@ -1,80 +1,45 @@
 [
-{
-    "type": "coffee-subscription",
-    "code": "ABO",
-    "name": "Kaffeabonnement",
-    "description": null,
-    "description2": null,
-    "infoUrl": null,
-    "price": "78.2",
-    "mva": "15",
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": null
-},
-{
-    "type": "coffee-gift-subscription",
-    "code": "GABO",
-    "name": "Gaveabonnement",
-    "description": null,
-    "description2": null,
-    "infoUrl": null,
-    "price": "78.2",
-    "mva": "15",
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": null
-},
-{
-    "type": "coffee",
-    "code": "KE",
-    "name": "Kenya (KE) – Kiangombe AA",
-    "description": "Herlig kaffe fra Kenya. Cupping score 87,5. Dyrket 1700-1800 moh. Vasket og fermentert med ferskvann fra Mukengeria elven og soltørket.",
-    "description2": "Solbær | Tropisk frukt | Søt | Bærpreg",
-    "infoUrl": null,
-    "price": 78.2,
-    "mva": 15,
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": "product_KE.jpeg"
-},
-{
-    "type": "coffee",
-    "code": "CO",
-    "name": "Colombia (CO) – Jair Caicedo",
-    "description": "Kaffe fra Colombia 250 g hele bønner.", 
-    "description2": "Vanilje | Bær | Sitrussirup | Honning",
-    "infoUrl": null,
-    "price": "78.2",
-    "mva": "15",
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": "product_CO.jpeg"
-},
-{
-    "type": "coffee",
-    "code": "ETH",
-    "name": "Etiopia (ETH) – Hunkute kooperativ",
-    "description": "Kaffe fra Etiopia 250 g hele bønner.", 
-    "description2": "Blåbær | Sitron | Floral",
-    "infoUrl": null,
-    "price": "78.2",
-    "mva": "15",
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": "product_ETH.jpeg"
-},
-{
-    "type": "coffee",
-    "code": "ETE",
-    "name": "Etiopia (ETE) – Egu Abaya Diima",
-    "description": "Herlig kaffe fra Etiopia. Cupping score 87,75.", 
-    "description2": "Intens frukt | God fylde | Floral",
-    "infoUrl": null,
-    "price": "78.2",
-    "mva": "15",
-    "isActive": true,
-    "isInStock": true,
-    "imageKey": "product_ETE.jpeg"
-}
-]
+    {
+        "category": "coffee",
+        "data": {
+            "code": "ETE",
+            "country": "Etiopia", 
+            "name": "Egu Abaya Diima",
+            "description": "Herlig kaffe fra Etiopia. Cupping score 87,75.", 
+            "tastes": "Intens frukt | God fylde | Floral"
+        },
+        "priceVariations": [
+            {
+                "name": "250g",
+                "price": 72.2
+            },
+            {
+                "name": "Kg",
+                "price": 280
+            }
+        ],
+        "infoUrl": null,
+        "vatGroup": "coffee",
+        "imageKey": "product_ETE.jpeg",
+        "isActive": true,
+        "isInStock": true
+    },
+    {
+        "category": "stash",
+        "data": {
+            "name": "Kvarn",
+            "description": "Fet kvarn alltså"
+        },
+        "infoUrl": null,
+        "priceVariations": [        
+            {
+                "name": "250g",
+                "price": 72.2
+            }
+        ],
+        "vatGroup": "normal",
+        "imageKey": "product_StashVirtuoso.jpeg",
+        "isActive": true,
+        "isInStock": true
+    }
+    ]

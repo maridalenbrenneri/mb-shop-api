@@ -42,8 +42,8 @@ class UserRepo extends BaseRepo {
         return {
             email: user.email,
             password: user.password,
-            givenName: user.givenName,
-            familyName: user.familyName,
+            name: user.name,
+            organizationNumber: user.organizationNumber,
             phone: user.phone,
             role: user.role,
             isActive: user.isActive

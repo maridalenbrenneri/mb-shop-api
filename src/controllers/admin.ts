@@ -5,6 +5,7 @@ import UserRepo from "../repositories/user-repo";
 import OrderRepo from "../repositories/order-repo";
 import ControllerBase from './controller-base';
 import SubscriptionRepo from "../repositories/subscription-repo";
+import customerRepo from "../repositories/customer-repo";
 
 class AdminController extends ControllerBase {
 
@@ -12,6 +13,7 @@ class AdminController extends ControllerBase {
 
     Promise.all([
       UserRepo.createTable(true), 
+      customerRepo.createTable(true),
       ProductRepo.createTable(true),
       OrderRepo.createTable(true),
       SubscriptionRepo.createTable(true)

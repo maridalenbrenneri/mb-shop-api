@@ -2,25 +2,30 @@ import { JSONB, STRING, DECIMAL, BOOLEAN, INTEGER, DATEONLY } from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
-    password: { type: STRING, allowNull: false },
-    role: { type: STRING, allowNull: false },         // customer, store-manager, admin 
-    givenName: { type: STRING, allowNull: false },
-    familyName: { type: STRING, allowNull: false },
-    phone: { type: STRING },
+    password: { type: STRING, allowNull: false }, 
+    role: { type: STRING, allowNull: false },         // admin, super-user, private-customer, business-customer
+    customerId: {type: INTEGER, allowNull: true },
     isActive: { type: BOOLEAN, allowNull: false },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
+}
+
+export const customerModel = {
+    email: { type: STRING, unique: true, allowNull: false },
+    name: { type: STRING, allowNull: false },
+    organizationNumber: { type: STRING },
+    phone: { type: STRING },
+    contactPerson: {type: STRING },
     addresses: { type: JSONB },
+    isActive: { type: BOOLEAN, allowNull: false, defaultValue: true  },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const productModel = {
     category: { type: STRING, allowNull: false },
-    code: { type: STRING, allowNull: false },
-    name: { type: STRING, allowNull: false },
-    description: { type: STRING },
-    description2: { type: STRING },
+    data: { type: JSONB, allowNull: false },
+    priceVariations: { type: JSONB, allowNull: false }, 
     infoUrl: { type: STRING },
-    price: { type: DECIMAL, allowNull: false },
-    taxRate: { type: DECIMAL, allowNull: false },
+    vatGroup: { type: STRING, allowNull: false },
     isActive: { type: BOOLEAN, allowNull: false },
     isInStock: { type: BOOLEAN, allowNull: false },
     portfolioImageKey: { type: STRING },
