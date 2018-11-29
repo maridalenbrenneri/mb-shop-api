@@ -15,7 +15,10 @@ export const customerModel = {
     organizationNumber: { type: STRING },
     phone: { type: STRING },
     contactPerson: {type: STRING },
-    addresses: { type: JSONB },
+    deliveryAddress: { type: JSONB },
+    invoiceAddress: { type: JSONB },
+    note: { type: STRING },
+    type: { type: STRING },
     isActive: { type: BOOLEAN, allowNull: false, defaultValue: true  },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }

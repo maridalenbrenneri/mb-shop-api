@@ -10,7 +10,8 @@ class CustomerRepo extends BaseRepo {
     }
 
     getCustomer = function (customerId: Number) {
-        return this.Customer.findById(customerId);
+        let customer = this.Customer.findById(customerId);
+        return this.mapToClientModel(customer);
     }
 
     getCustomers = function (filter) {
@@ -35,13 +36,18 @@ class CustomerRepo extends BaseRepo {
     }
 
     mapToDbModel = function(customer) {
+
         return {
             email: customer.email,
             name: customer.name,
             organizationNumber: customer.organizationNumber,
             phone: customer.phone,
             contactPerson: customer.contactPerson,
-            isActive: customer.isActive
+            isActive: customer.isActive,
+            deliveryAddress: customer.deliveryAddress,
+            invoiceAddress: customer.invoiceAddress,
+            note: customer.note,
+            type: customer.type
         };
     }
 }
