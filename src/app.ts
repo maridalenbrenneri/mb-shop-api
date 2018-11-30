@@ -105,7 +105,7 @@ app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.upda
 // Orders
 app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
 app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
-app.post("/api/orders", isAuthenticated, orderController.createOrder);
+app.post("/api/orders", isUserInStoreManagerOrAbove, orderController.createOrder);
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
 app.post("/api/orders/:id/complete-and-ship", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
