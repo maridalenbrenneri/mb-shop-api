@@ -9,8 +9,8 @@ require('dotenv').config();
 
 function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
 
-    // todo: DEV STUFF - REMOVE!
-  //  return next();
+    // todo: DEV STUFF - TO BEREMOVED
+    // return next();
 
     let token = req.headers['x-access-token'];
 
@@ -37,16 +37,6 @@ function isUserInStoreManagerOrAbove(req: Request, res: Response, next: any) : B
 
 function isUserInAdmin(req: Request, res: Response, next: any) : Boolean {
     return next();
-}
-
-function onOrderCreate(req: Request, res: Response, next: any) {
-    console.log("Order started...");
-    next();
-}
-
-function onOrderCreated(req: Request, res: Response, next: any) {
-    console.log("Order completed.");
-    next();
 }
 
 const app = express();
@@ -108,7 +98,8 @@ app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
 app.post("/api/orders", isUserInStoreManagerOrAbove, orderController.createOrder);
 app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
-app.post("/api/orders/:id/complete-and-ship", isUserInStoreManagerOrAbove, orderController.completeAndShipOrder);
+app.post("/api/orders/:id/cancel", isUserInStoreManagerOrAbove, orderController.cancelOrder);
+app.post("/api/orders/:id/process", isUserInStoreManagerOrAbove, orderController.processOrder);
 
 // Subscriptions
 app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
@@ -133,7 +124,7 @@ app.use(function (err, req, res, next) {
     return res.status(500).send({error: err.message});
  });
 
- console.log('NODE_ENV: ' + process.env.NODE_ENV);
+// console.log('NODE_ENV: ' + process.env.NODE_ENV);
 // console.log('DATABASE_URL: ' + process.env.DATABASE_URL);
 
 export default app;

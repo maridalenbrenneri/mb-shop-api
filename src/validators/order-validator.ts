@@ -14,4 +14,21 @@ export class OrderValidator {
             throw new ValidationError("Order doesn't contain any items");
         } 
     }
+
+    static validateStatus(currentStatus: string, newStatus: string) {
+
+        const statuses = ['processing', 'canceled', 'completed'];
+
+        if(!statuses.find(s => s === newStatus)) {
+            throw new ValidationError("Invalid order status");
+        }
+
+        if(currentStatus === 'canceled' && newStatus === 'completed') {
+            throw new ValidationError("It's not allowed to complete a canceled order");
+        }
+
+        if(currentStatus === 'completed' && newStatus === 'canceled') {
+            throw new ValidationError("It's not allowed to cancel a completed order");
+        }
+    }
 }

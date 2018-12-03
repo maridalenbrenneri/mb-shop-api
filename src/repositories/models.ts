@@ -1,4 +1,4 @@
-import { JSONB, STRING, DECIMAL, BOOLEAN, INTEGER, DATEONLY } from 'sequelize';
+import { JSONB, STRING, BOOLEAN, INTEGER, DATEONLY, DATE} from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
@@ -26,21 +26,24 @@ export const customerModel = {
 export const productModel = {
     category: { type: STRING, allowNull: false },
     data: { type: JSONB, allowNull: false },
-    priceVariations: { type: JSONB, allowNull: false }, 
+    productVariations: { type: JSONB, allowNull: false }, 
     infoUrl: { type: STRING },
     vatGroup: { type: STRING, allowNull: false },
-    isActive: { type: BOOLEAN, allowNull: false },
+    isActive: { type: BOOLEAN, allowNull: false, defaultValue: true },
     isInStock: { type: BOOLEAN, allowNull: false },
     portfolioImageKey: { type: STRING },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const orderModel = {
+    orderDate: {type: DATE, allowNull: false },
+    deliveryDate: {type: DATE, allowNull: true },
     status: { type: STRING, allowNull: false },
-    type: { type: STRING, allowNull: false },
-    subscriptionId: { type: INTEGER },
     customer: { type: JSONB, allowNull: false },
     items: { type: JSONB, allowNull: false },
+    notes: { type: JSONB, allowNull: false },
+    isRecurringOrder: { type: BOOLEAN, allowNull: false, defaultValue: false },
+    subscriptionId: { type: INTEGER, allowNull: true },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 

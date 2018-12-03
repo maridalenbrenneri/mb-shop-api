@@ -14,6 +14,9 @@ class OrderRepo extends BaseRepo {
     }
 
     getOrders = function (filter) {
+
+        // todo: map to client model (JSON.parse on customer and items)
+
         filter = filter || {};
         filter.isDeleted = false;
 
@@ -48,10 +51,15 @@ class OrderRepo extends BaseRepo {
 
     mapToDbModel = function(order) {
         return {
-            status: 'created',
+            orderDate: order.orderDate,
+            deliveryDate: order.deliveryDate,
+            status: order.status,
             type: order.type,
             customer: JSON.stringify(order.customer),
-            items: JSON.stringify(order.items)
+            items: JSON.stringify(order.items),
+            notes: JSON.stringify(order.notes),
+            isRecurringOrder: order.isRecurringOrder,
+            subscriptionId: order.subscriptionId
         };
     }
 }

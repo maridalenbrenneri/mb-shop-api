@@ -1,24 +1,21 @@
 import { Response } from "express";
 import orderRepo  from '../repositories/order-repo';
 import { OrderValidator } from '../validators/order-validator';
-import subscriptionService from "./subscription-service";
 import { ValidationError } from "../models/validation-error";
+import { OrderStatus } from "../constants";
 
 class OrderService {
 
     createOrder(order: any, res: Response) {
         OrderValidator.validate(order);
         
+        order.orderDate = Date.now()
+        order.status = "processing";
+        order.notes = [];
+
         return orderRepo.createOrder(order).then(createdOrder => {
 
-            if (subscriptionService.doesOrderContainSubscription(createdOrder)) {
-                return subscriptionService.createSubscriptionFromOrder(createdOrder).then(() => {
-                    return res.send(createdOrder);
-                });
-            
-            } else {
-                return res.send(createdOrder);
-            }
+            return res.send(createdOrder);
 
         }).catch(function (err) { 
             // todo: this catch should be handled by global err handler, but doesn't seem to work for some reason...
@@ -33,15 +30,19 @@ class OrderService {
         return orderRepo.getOrders(filter);
     }
 
-    updateOrderStatus(orderId: Number, newStatus: String, res: Response) {
-         
-        return orderRepo.updateOrderStatus(orderId, newStatus).then(function([ ordersUpdated, [updatedOrder] ]) {
+    updateOrderStatus(orderId: number, newStatus: string, res: Response) {
 
-            if (ordersUpdated === 0) {
-                return res.status(404).send();
-            } 
-      
-            return res.send(updatedOrder);
+        return orderRepo.getOrder(orderId).then(function(order) {
+            OrderValidator.validateStatus(order.status, newStatus);
+
+            return orderRepo.updateOrderStatus(orderId, newStatus).then(function([ ordersUpdated, [updatedOrder] ]) {
+
+                if (ordersUpdated === 0) {
+                    return res.status(404).send();
+                } 
+          
+                return res.send(updatedOrder);
+            });
         });
     }
 }

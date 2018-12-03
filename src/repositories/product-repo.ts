@@ -48,7 +48,7 @@ class ProductRepo extends BaseRepo {
         return {
             category: product.category,
             data: product.data,
-            priceVariations: product.priceVariations,
+            productVariations: product.productVariations,
             infoUrl: product.infoUrl,
             vatGroup: product.vatGroup,
             isActive: product.isActive,

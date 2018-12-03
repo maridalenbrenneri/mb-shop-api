@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import orderRepo  from '../repositories/order-repo';
 import orderService from "../services/order-service";
+import { OrderStatus } from "../constants";
 
 class OrderController {
 
@@ -60,18 +61,29 @@ class OrderController {
 
     // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
 
-    return orderService.updateOrderStatus(req.params.id, 'completed', res);
+    return orderService.updateOrderStatus(req.params.id, "completed", res);
 
   }
 
   /**
-   * POST /orders/:id/complete-and-ship
+   * POST /orders/:id/cancel
    */
-  completeAndShipOrder (req: Request, res: Response) {
+  cancelOrder (req: Request, res: Response, next: any) {
 
-    // todo: call shipping service => then =>
+    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
 
-    return orderService.updateOrderStatus(req.params.id, 'completed', res);
+    return orderService.updateOrderStatus(req.params.id, "canceled", res);
+
+  }
+
+   /**
+   * POST /orders/:id/process
+   */
+  processOrder (req: Request, res: Response, next: any) {
+
+    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
+
+    return orderService.updateOrderStatus(req.params.id, "processing", res);
 
   }
 

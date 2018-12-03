@@ -25,6 +25,13 @@ export class OrderTypes {
     static renewal: 'renewal';
 }
 
+export class OrderStatus {
+    static created: 'created';
+    static processing: 'processing';
+    static completed: 'completed';
+    static canceled: 'canceled';
+}
+
 export class SubscriptionFrequence {
     static monthly = 1;
     static fortnightly = 2;
