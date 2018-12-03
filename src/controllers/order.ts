@@ -87,6 +87,17 @@ class OrderController {
 
   }
 
+  /**
+   * POST /orders/:id/process
+   */
+  addOrderNote (req: Request, res: Response, next: any) {
+
+    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
+
+    return orderService.addOrderNote(req.body, res);
+
+  }
+
 }
 
 export default new OrderController();

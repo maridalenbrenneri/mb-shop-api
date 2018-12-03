@@ -1,6 +1,7 @@
 import { ValidationError } from "../models/validation-error";
 
 export class OrderValidator {
+
     static validate(order) {
         if(!order.type) {
             throw new ValidationError("Order doesn't have a type");
@@ -31,4 +32,14 @@ export class OrderValidator {
             throw new ValidationError("It's not allowed to cancel a completed order");
         }
     }
+
+    static validateOrderNote(orderNote: any): any {
+        if(!orderNote || !orderNote.orderId || !orderNote.note) {
+            throw new ValidationError("Invalid order note");
+        }
+
+        if(orderNote.note.length > 2000) {
+            throw new ValidationError("Order note exceded maximum length");
+        }
+    }    
 }

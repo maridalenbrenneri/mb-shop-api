@@ -10,35 +10,38 @@ class OrderRepo extends BaseRepo {
     }
 
     getOrder = function (orderId: Number) {
-        return this.Order.findById(orderId);
+        let order = this.Order.findById(orderId);
+        return this.mapToClientModel(order);
     }
 
     getOrders = function (filter) {
 
-        // todo: map to client model (JSON.parse on customer and items)
-
         filter = filter || {};
         filter.isDeleted = false;
 
-        return this.Order.findAll({
+        let orders = this.Order.findAll({
             where:filter,
             order: [
                 ['createdAt', 'DESC']
             ]
         });
+
+        return orders.map(o => this.mapToClientModel(o));
     }
 
     createOrder = function(order) {
-        return this.Order.create(this.mapToDbModel(order));
+        let createdOrder = this.Order.create(this.mapToDbModel(order));
+        return this.mapToClientModel(createdOrder);
     }
 
+    // Obsolete ?
     createOrders(orders: any): any {
         let dbModels = orders.map(order => this.mapToDbModel(order));
         return this.Order.bulkCreate(dbModels);
     }
 
     updateOrderStatus = function(orderId, newStatus) {
-        return this.Order.update(
+        let order = this.Order.update(
             {
                 status: newStatus
             },
@@ -47,6 +50,22 @@ class OrderRepo extends BaseRepo {
                 where: { id: orderId }
             }
         );
+
+        return this.mapToClientModel(order);
+    }
+
+    addOrderNote = function(orderId: number, orderNotes: Array<any>) {
+        let order = this.Order.update(
+            {
+                notes: orderNotes
+            },
+            {
+                returning: true,
+                where: { id: orderId }
+            }
+        ) 
+
+        return this.mapToClientModel(order);
     }
 
     mapToDbModel = function(order) {
@@ -61,6 +80,21 @@ class OrderRepo extends BaseRepo {
             isRecurringOrder: order.isRecurringOrder,
             subscriptionId: order.subscriptionId
         };
+    }
+
+    mapToClientModel = function(order) {
+        return {
+            id: order.id,
+            orderDate: order.orderDate,
+            deliveryDate: order.deliveryDate,
+            status: order.status,
+            type: order.type,
+            customer: JSON.parse(order.customer),
+            items: JSON.parse(order.items),
+            notes: JSON.parse(order.notes),
+            isRecurringOrder: order.isRecurringOrder,
+            subscriptionId: order.subscriptionId
+        }
     }
 }
 

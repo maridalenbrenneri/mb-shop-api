@@ -100,6 +100,7 @@ app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
 app.post("/api/orders/:id/cancel", isUserInStoreManagerOrAbove, orderController.cancelOrder);
 app.post("/api/orders/:id/process", isUserInStoreManagerOrAbove, orderController.processOrder);
+app.post("/api/orders/:id/notes", isUserInStoreManagerOrAbove, orderController.addOrderNote);
 
 // Subscriptions
 app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);

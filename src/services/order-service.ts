@@ -45,6 +45,18 @@ class OrderService {
             });
         });
     }
+
+    addOrderNote(orderNote: any, res: any): any {
+        
+        OrderValidator.validateOrderNote(orderNote);
+
+        return orderRepo.getOrder(orderNote.orderId).then(order=> {
+            order.notes.push(orderNote);
+            return orderRepo.addOrderNote(order.id, order.notes).then(updatedOrder => {
+                return updatedOrder;
+            });
+        });
+    }
 }
 
 export default new OrderService();
