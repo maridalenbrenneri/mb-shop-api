@@ -14,9 +14,10 @@ class AdminController extends ControllerBase {
     Promise.all([
       // UserRepo.createTable(true), 
       // customerRepo.createTable(true),
-      ProductRepo.createTable(true),
+    //  ProductRepo.createTable(true),
       OrderRepo.createTable(true),
-      SubscriptionRepo.createTable(true)
+      
+      //SubscriptionRepo.createTable(true)
 
     ]).then(() => {
       logger.info("Tables created");

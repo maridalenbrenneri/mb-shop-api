@@ -13,9 +13,11 @@ class OrderService {
         order.status = "processing";
         order.notes = [];
 
-        return orderRepo.createOrder(order).then(createdOrder => {
+        return orderRepo.createOrder(this.mapToDbModel(order)).then(dbOrder => {
 
-            return res.send(createdOrder);
+            let clientOrder = this.mapToClientModel(dbOrder);
+
+            return res.send(clientOrder);
 
         }).catch(function (err) { 
             // todo: this catch should be handled by global err handler, but doesn't seem to work for some reason...
@@ -26,8 +28,19 @@ class OrderService {
         });
     };
 
-    getOrders(filter = {}) {
-        return orderRepo.getOrders(filter);
+    getOrder(orderId: number, res: Response) {
+        return orderRepo.getOrder(orderId).then(dbOrder => {
+            if (!dbOrder) {
+              return res.status(404).send("Order was not found, order id: " + orderId);
+            }
+            return res.send(this.mapToClientModel(dbOrder));
+          });
+    }
+
+    getOrders(res: Response, filter = {}) {
+        return orderRepo.getOrders(filter).then(dbOrders => {
+            return res.send(dbOrders.map(order => this.mapToClientModel(order)));
+        });
     }
 
     updateOrderStatus(orderId: number, newStatus: string, res: Response) {
@@ -41,7 +54,7 @@ class OrderService {
                     return res.status(404).send();
                 } 
           
-                return res.send(updatedOrder);
+                return res.send(this.mapToClientModel(updatedOrder));
             });
         });
     }
@@ -51,11 +64,42 @@ class OrderService {
         OrderValidator.validateOrderNote(orderNote);
 
         return orderRepo.getOrder(orderNote.orderId).then(order=> {
+            // let notes = JSON.parse(order.notes);
             order.notes.push(orderNote);
+
             return orderRepo.addOrderNote(order.id, order.notes).then(updatedOrder => {
-                return updatedOrder;
+                return res.send(this.mapToClientModel(updatedOrder));
             });
         });
+    }
+    
+    private mapToDbModel = function(order) {
+        return {
+            orderDate: order.orderDate,
+            deliveryDate: order.deliveryDate,
+            status: order.status,
+            type: order.type,
+            customer: order.customer,
+            items: order.items,
+            notes: order.notes,
+            isRecurringOrder: order.isRecurringOrder,
+            subscriptionId: order.subscriptionId
+        };
+    }
+
+    private mapToClientModel = function(order) {
+        return {
+            id: order.id,
+            orderDate: order.orderDate,
+            deliveryDate: order.deliveryDate,
+            status: order.status,
+            type: order.type,
+            customer: order.customer,
+            items: order.items,
+            notes: order.notes,
+            isRecurringOrder: order.isRecurringOrder,
+            subscriptionId: order.subscriptionId
+        }
     }
 }
 

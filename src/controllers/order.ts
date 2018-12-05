@@ -10,12 +10,8 @@ class OrderController {
    */
   getOrder = function (req: Request, res: Response, next: any) {
 
-    orderRepo.getOrder(req.params.id).then(order => {
-      if (!order) {
-        return res.status(404).send("Order was not found.");
-      }
-
-      res.send(order);
+    orderService.getOrder(req.params.id, res).then(order => {
+      return res.send(order);
     });
 
   }
@@ -25,9 +21,7 @@ class OrderController {
    */
   getOrders (req: Request, res: Response) {
 
-    orderService.getOrders().then(orders => {
-      return res.send(orders);
-    });
+    return orderService.getOrders(res);
   }
 
   /**

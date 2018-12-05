@@ -10,8 +10,7 @@ class OrderRepo extends BaseRepo {
     }
 
     getOrder = function (orderId: Number) {
-        let order = this.Order.findById(orderId);
-        return this.mapToClientModel(order);
+        return this.Order.findById(orderId);
     }
 
     getOrders = function (filter) {
@@ -19,29 +18,20 @@ class OrderRepo extends BaseRepo {
         filter = filter || {};
         filter.isDeleted = false;
 
-        let orders = this.Order.findAll({
+        return this.Order.findAll({
             where:filter,
             order: [
                 ['createdAt', 'DESC']
             ]
         });
-
-        return orders.map(o => this.mapToClientModel(o));
     }
 
     createOrder = function(order) {
-        let createdOrder = this.Order.create(this.mapToDbModel(order));
-        return this.mapToClientModel(createdOrder);
-    }
-
-    // Obsolete ?
-    createOrders(orders: any): any {
-        let dbModels = orders.map(order => this.mapToDbModel(order));
-        return this.Order.bulkCreate(dbModels);
+        return this.Order.create(order);
     }
 
     updateOrderStatus = function(orderId, newStatus) {
-        let order = this.Order.update(
+        return this.Order.update(
             {
                 status: newStatus
             },
@@ -50,12 +40,10 @@ class OrderRepo extends BaseRepo {
                 where: { id: orderId }
             }
         );
-
-        return this.mapToClientModel(order);
     }
 
     addOrderNote = function(orderId: number, orderNotes: Array<any>) {
-        let order = this.Order.update(
+        return this.Order.update(
             {
                 notes: orderNotes
             },
@@ -63,38 +51,7 @@ class OrderRepo extends BaseRepo {
                 returning: true,
                 where: { id: orderId }
             }
-        ) 
-
-        return this.mapToClientModel(order);
-    }
-
-    mapToDbModel = function(order) {
-        return {
-            orderDate: order.orderDate,
-            deliveryDate: order.deliveryDate,
-            status: order.status,
-            type: order.type,
-            customer: JSON.stringify(order.customer),
-            items: JSON.stringify(order.items),
-            notes: JSON.stringify(order.notes),
-            isRecurringOrder: order.isRecurringOrder,
-            subscriptionId: order.subscriptionId
-        };
-    }
-
-    mapToClientModel = function(order) {
-        return {
-            id: order.id,
-            orderDate: order.orderDate,
-            deliveryDate: order.deliveryDate,
-            status: order.status,
-            type: order.type,
-            customer: JSON.parse(order.customer),
-            items: JSON.parse(order.items),
-            notes: JSON.parse(order.notes),
-            isRecurringOrder: order.isRecurringOrder,
-            subscriptionId: order.subscriptionId
-        }
+        ).then() 
     }
 }
 

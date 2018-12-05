@@ -58,14 +58,14 @@ app.use(function (req: Request, res: Response, next: any) : Boolean {
     return next();
 });
 
-app.set("port", process.env.PORT || 5002);
+// app.set("port", process.env.PORT || 5002);
 
 import adminController from './controllers/admin';
 import authController from './controllers/auth';
 import customerController from './controllers/customer';
 import productController from './controllers/product';
 import orderController from './controllers/order';
-import subscriptionController from './controllers/subscription';
+//import subscriptionController from './controllers/subscription';
 import { ValidationError } from "./models/validation-error";
 
 /*** API ***/
@@ -93,24 +93,24 @@ app.post("/api/products", isUserInStoreManagerOrAbove, productController.createP
 app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
 
 // Orders
+app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
 app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
 app.post("/api/orders", isUserInStoreManagerOrAbove, orderController.createOrder);
-app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
 app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
 app.post("/api/orders/:id/cancel", isUserInStoreManagerOrAbove, orderController.cancelOrder);
 app.post("/api/orders/:id/process", isUserInStoreManagerOrAbove, orderController.processOrder);
 app.post("/api/orders/:id/notes", isUserInStoreManagerOrAbove, orderController.addOrderNote);
 
 // Subscriptions
-app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
-app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
-app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
-app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
-app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
-app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
-app.post("/api/subscriptions/:id/complete-cancel", isUserInStoreManagerOrAbove, subscriptionController.completeCancelSubscription);
-app.post("/api/subscription/engine/create-renewal-orders", isUserInStoreManagerOrAbove, subscriptionController.createRenewalOrders);
+// app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
+// app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
+// app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
+// app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
+// app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
+// app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
+// app.post("/api/subscriptions/:id/complete-cancel", isUserInStoreManagerOrAbove, subscriptionController.completeCancelSubscription);
+// app.post("/api/subscription/engine/create-renewal-orders", isUserInStoreManagerOrAbove, subscriptionController.createRenewalOrders);
 
 /*** END API ***/ 
 
