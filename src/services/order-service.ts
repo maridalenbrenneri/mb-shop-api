@@ -26,7 +26,7 @@ class OrderService {
             } 
             return res.status(500).send({error: err.message});
         });
-    };
+    }
 
     getOrder(orderId: number, res: Response) {
         return orderRepo.getOrder(orderId).then(dbOrder => {
@@ -45,6 +45,8 @@ class OrderService {
 
     updateOrderStatus(orderId: number, newStatus: string, res: Response) {
 
+        let self = this;
+        
         return orderRepo.getOrder(orderId).then(function(order) {
             OrderValidator.validateStatus(order.status, newStatus);
 
@@ -54,7 +56,7 @@ class OrderService {
                     return res.status(404).send();
                 } 
           
-                return res.send(this.mapToClientModel(updatedOrder));
+                return res.send(self.mapToClientModel(updatedOrder));
             });
         });
     }
@@ -64,7 +66,6 @@ class OrderService {
         OrderValidator.validateOrderNote(orderNote);
 
         return orderRepo.getOrder(orderNote.orderId).then(order=> {
-            // let notes = JSON.parse(order.notes);
             order.notes.push(orderNote);
 
             return orderRepo.addOrderNote(order.id, order.notes).then(updatedOrder => {
@@ -73,7 +74,7 @@ class OrderService {
         });
     }
     
-    private mapToDbModel = function(order) {
+    mapToDbModel = function(order) {
         return {
             orderDate: order.orderDate,
             deliveryDate: order.deliveryDate,
@@ -87,7 +88,7 @@ class OrderService {
         };
     }
 
-    private mapToClientModel = function(order) {
+    mapToClientModel = function(order) {
         return {
             id: order.id,
             orderDate: order.orderDate,
