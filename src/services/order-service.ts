@@ -7,15 +7,16 @@ import { OrderStatus } from "../constants";
 class OrderService {
 
     createOrder(order: any, res: Response) {
+        let self = this;
         OrderValidator.validate(order);
         
         order.orderDate = Date.now()
-        order.status = "processing";
+        order.status = OrderStatus.processing;
         order.notes = [];
 
-        return orderRepo.createOrder(this.mapToDbModel(order)).then(dbOrder => {
+        return orderRepo.createOrder(self.mapToDbModel(order)).then(dbOrder => {
 
-            let clientOrder = this.mapToClientModel(dbOrder);
+            let clientOrder = self.mapToClientModel(dbOrder);
 
             return res.send(clientOrder);
 
@@ -29,22 +30,23 @@ class OrderService {
     }
 
     getOrder(orderId: number, res: Response) {
+        let self = this;
         return orderRepo.getOrder(orderId).then(dbOrder => {
             if (!dbOrder) {
               return res.status(404).send("Order was not found, order id: " + orderId);
             }
-            return res.send(this.mapToClientModel(dbOrder));
+            return res.send(self.mapToClientModel(dbOrder));
           });
     }
 
     getOrders(res: Response, filter = {}) {
+        let self = this;
         return orderRepo.getOrders(filter).then(dbOrders => {
-            return res.send(dbOrders.map(order => this.mapToClientModel(order)));
+            return res.send(dbOrders.map(order => self.mapToClientModel(order)));
         });
     }
 
     updateOrderStatus(orderId: number, newStatus: string, res: Response) {
-
         let self = this;
         
         return orderRepo.getOrder(orderId).then(function(order) {
@@ -62,14 +64,15 @@ class OrderService {
     }
 
     addOrderNote(orderNote: any, res: any): any {
-        
+        let self = this;
+
         OrderValidator.validateOrderNote(orderNote);
 
         return orderRepo.getOrder(orderNote.orderId).then(order=> {
             order.notes.push(orderNote);
 
             return orderRepo.addOrderNote(order.id, order.notes).then(updatedOrder => {
-                return res.send(this.mapToClientModel(updatedOrder));
+                return res.send(self.mapToClientModel(updatedOrder));
             });
         });
     }
@@ -81,8 +84,8 @@ class OrderService {
             status: order.status,
             type: order.type,
             customer: order.customer,
-            items: order.items,
-            notes: order.notes,
+            items: JSON.stringify(order.items),
+            notes: JSON.stringify(order.notes),
             isRecurringOrder: order.isRecurringOrder,
             subscriptionId: order.subscriptionId
         };
@@ -96,8 +99,8 @@ class OrderService {
             status: order.status,
             type: order.type,
             customer: order.customer,
-            items: order.items,
-            notes: order.notes,
+            items: JSON.parse(order.items),
+            notes: JSON.parse(order.notes),
             isRecurringOrder: order.isRecurringOrder,
             subscriptionId: order.subscriptionId
         }

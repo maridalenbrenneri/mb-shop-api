@@ -1,45 +1,45 @@
 export class Constants {
-    static deliveryDay = 2; // Tuesday
-    static subscriptionRenewalPaymentDaysBeforeDelivery = 14;
-    static minPasswordLength = 5;
+    static readonly deliveryDay = 2; // Tuesday
+    static readonly subscriptionRenewalPaymentDaysBeforeDelivery = 14;
+    static readonly minPasswordLength = 5;
 }
 
 export class TaxRates {
-    static coffee = 0.15;
-    static standard = 0.25;
+    static readonly coffee = 0.15;
+    static readonly standard = 0.25;
 }
 
 export class FreightRates {
-    static standard = 40;
-    static standard_subscription = 30;
+    static readonly standard = 40;
+    static readonly standard_subscription = 30;
 }
 
 export class ProductCategories {
-    static coffee = 'coffee';
-    static coffeeSubscription = 'coffee-subscription';
-    static coffeeGiftSubscription = 'coffee-gift-subscription';
+    static readonly coffee = 'coffee';
+    static readonly coffeeSubscription = 'coffee-subscription';
+    static readonly coffeeGiftSubscription = 'coffee-gift-subscription';
 }
 
 export class OrderTypes {
-    static normal: 'normal';
-    static renewal: 'renewal';
+    static readonly normal = 'normal';
+    static readonly renewal = 'renewal';
 }
 
 export class OrderStatus {
-    static created: 'created';
-    static processing: 'processing';
-    static completed: 'completed';
-    static canceled: 'canceled';
+    static readonly created = 'created';
+    static readonly processing = 'processing';
+    static readonly completed = 'completed';
+    static readonly canceled = 'canceled';
 }
 
 export class SubscriptionFrequence {
-    static monthly = 1;
-    static fortnightly = 2;
+    static readonly monthly = 1;
+    static readonly fortnightly = 2;
 }
 
 export class SubscriptionStatus {
-    static active = 'active';
-    static onHold = 'on-hold';
-    static pendingCancel = 'pending-cancel';
-    static cancelled = 'cancelled';
+    static readonly active = 'active';
+    static readonly onHold = 'on-hold';
+    static readonly pendingCancel = 'pending-cancel';
+    static readonly cancelled = 'cancelled';
 }

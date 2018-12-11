@@ -9,9 +9,6 @@ require('dotenv').config();
 
 function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
 
-    // todo: DEV STUFF - TO BEREMOVED
-    // return next();
-
     let token = req.headers['x-access-token'];
 
     if (!token) {
@@ -31,12 +28,18 @@ function isAuthenticated(req: Request, res: Response, next: any) : Boolean {
     });
 }
 
-function isUserInStoreManagerOrAbove(req: Request, res: Response, next: any) : Boolean {
-    return next();
+function isUserInSuperuser(req: Request, res: Response, next: any) : Boolean {
+    
+    // todo: when more users are added, implement...
+
+    return isAuthenticated(req, res, next);
 }
 
 function isUserInAdmin(req: Request, res: Response, next: any) : Boolean {
-    return next();
+
+    // todo: when more users are added, implement...
+
+    return isAuthenticated(req, res, next);
 }
 
 const app = express();
@@ -58,8 +61,6 @@ app.use(function (req: Request, res: Response, next: any) : Boolean {
     return next();
 });
 
-// app.set("port", process.env.PORT || 5002);
-
 import adminController from './controllers/admin';
 import authController from './controllers/auth';
 import customerController from './controllers/customer';
@@ -72,45 +73,46 @@ import { ValidationError } from "./models/validation-error";
 
 // Admin routes
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
-app.post("/api/products/create-many", isUserInAdmin, productController.createProducts);
 
 // User and auth
 app.post("/api/authenticate", authController.authenticate);
 app.get("/api/users/me", isAuthenticated, authController.getMe);
-app.get("/api/users", isUserInStoreManagerOrAbove, authController.getUsers);
-app.post("/api/users", authController.registerUser);
+app.get("/api/users", isUserInAdmin, authController.getUsers);
+
+// Not supported right now
+// app.post("/api/users", authController.registerUser);
 
 // Customers
 app.get("/api/customers", customerController.getCustomers);
 app.get("/api/customers/:id", customerController.getCustomer);
-app.post("/api/customers", isUserInStoreManagerOrAbove, customerController.createCustomer);
-app.put("/api/customers/:id", isUserInStoreManagerOrAbove, customerController.updateCustomer);
+app.post("/api/customers", isUserInSuperuser, customerController.createCustomer);
+app.put("/api/customers/:id", isUserInSuperuser, customerController.updateCustomer);
 
 // Products
 app.get("/api/products", productController.getProducts);
 app.get("/api/products/:id", productController.getProduct);
-app.post("/api/products", isUserInStoreManagerOrAbove, productController.createProduct);
-app.put("/api/products/:id", isUserInStoreManagerOrAbove, productController.updateProduct);
+app.post("/api/products", isUserInSuperuser, productController.createProduct);
+app.put("/api/products/:id", isUserInSuperuser, productController.updateProduct);
 
 // Orders
-app.get("/api/orders", isUserInStoreManagerOrAbove, orderController.getOrders);
+app.get("/api/orders", isUserInSuperuser, orderController.getOrders);
 app.get("/api/orders/:id", isAuthenticated, orderController.getOrders);
 app.get("/api/orders/mine", isAuthenticated, orderController.getMyOrders);
-app.post("/api/orders", isUserInStoreManagerOrAbove, orderController.createOrder);
-app.post("/api/orders/:id/complete", isUserInStoreManagerOrAbove, orderController.completeOrder);
-app.post("/api/orders/:id/cancel", isUserInStoreManagerOrAbove, orderController.cancelOrder);
-app.post("/api/orders/:id/process", isUserInStoreManagerOrAbove, orderController.processOrder);
-app.post("/api/orders/:id/notes", isUserInStoreManagerOrAbove, orderController.addOrderNote);
+app.post("/api/orders", isUserInSuperuser, orderController.createOrder);
+app.post("/api/orders/:id/complete", isUserInSuperuser, orderController.completeOrder);
+app.post("/api/orders/:id/cancel", isUserInSuperuser, orderController.cancelOrder);
+app.post("/api/orders/:id/process", isUserInSuperuser, orderController.processOrder);
+app.post("/api/orders/:id/notes", isUserInSuperuser, orderController.addOrderNote);
 
 // Subscriptions
 // app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);
 // app.post("/api/subscriptions/:id/activate", isAuthenticated, subscriptionController.activateSubscription);
 // app.post("/api/subscriptions/:id/pause", isAuthenticated, subscriptionController.pauseSubscription);
 // app.post("/api/subscriptions/:id/cancel", isAuthenticated, subscriptionController.startCancelSubscription);
-// app.get("/api/subscriptions", isUserInStoreManagerOrAbove, subscriptionController.getSubscriptions);
-// app.get("/api/subscriptions/data/delivery-dates", isUserInStoreManagerOrAbove, subscriptionController.getNextStandardDeliveryDates);
-// app.post("/api/subscriptions/:id/complete-cancel", isUserInStoreManagerOrAbove, subscriptionController.completeCancelSubscription);
-// app.post("/api/subscription/engine/create-renewal-orders", isUserInStoreManagerOrAbove, subscriptionController.createRenewalOrders);
+// app.get("/api/subscriptions", isUserInSuperuser, subscriptionController.getSubscriptions);
+// app.get("/api/subscriptions/data/delivery-dates", isUserInSuperuser, subscriptionController.getNextStandardDeliveryDates);
+// app.post("/api/subscriptions/:id/complete-cancel", isUserInSuperuser, subscriptionController.completeCancelSubscription);
+// app.post("/api/subscription/engine/create-renewal-orders", isUserInSuperuser, subscriptionController.createRenewalOrders);
 
 /*** END API ***/ 
 

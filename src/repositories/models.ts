@@ -1,4 +1,5 @@
-import { JSONB, STRING, BOOLEAN, INTEGER, DATEONLY, DATE} from 'sequelize';
+import Sequlize from 'sequelize'
+import { STRING, BOOLEAN, INTEGER, DATEONLY, DATE, TEXT} from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
@@ -15,8 +16,8 @@ export const customerModel = {
     organizationNumber: { type: STRING },
     phone: { type: STRING },
     contactPerson: {type: STRING },
-    deliveryAddress: { type: JSONB },
-    invoiceAddress: { type: JSONB },
+    deliveryAddress: { type: Sequlize.TEXT },
+    invoiceAddress: { type: Sequlize.TEXT },
     note: { type: STRING },
     type: { type: STRING },
     isActive: { type: BOOLEAN, allowNull: false, defaultValue: true  },
@@ -25,8 +26,8 @@ export const customerModel = {
 
 export const productModel = {
     category: { type: STRING, allowNull: false },
-    data: { type: JSONB, allowNull: false },
-    productVariations: { type: JSONB, allowNull: false }, 
+    data: { type: Sequlize.TEXT  },
+    productVariations: { type: Sequlize.TEXT }, 
     infoUrl: { type: STRING },
     vatGroup: { type: STRING, allowNull: false },
     isActive: { type: BOOLEAN, allowNull: false, defaultValue: true },
@@ -39,9 +40,9 @@ export const orderModel = {
     orderDate: {type: DATE, allowNull: false },
     deliveryDate: {type: DATE, allowNull: true },
     status: { type: STRING, allowNull: false },
-    customer: { type: JSONB, allowNull: false },
-    items: { type: JSONB, allowNull: false },
-    notes: { type: JSONB, allowNull: false },
+    customer: { type: Sequlize.TEXT },
+    items: { type: Sequlize.TEXT },
+    notes: { type: Sequlize.TEXT },
     isRecurringOrder: { type: BOOLEAN, allowNull: false, defaultValue: false },
     subscriptionId: { type: INTEGER, allowNull: true },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }

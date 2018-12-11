@@ -10,28 +10,23 @@ class ProductRepo extends BaseRepo {
     }
 
     getProduct = function (productId: Number) {
-        return this.Product.findById(productId);
+        let dbProduct = this.Product.findById(productId);
+        return this.mapToClientModel(dbProduct);
     }
 
     getProducts = function (filter) {
+        let self = this;
+
         filter = filter || {};
         filter.isDeleted = false;
+
+        let dbProducts = this.Product.findAll({where:filter});
         
-        return this.Product.findAll({where:filter});
+        return dbProducts.map(p => self.mapToClientModel(p)); 
     }
 
     createProduct = function(product) {
         return this.Product.create(this.mapToDbModel(product));
-    }
-
-    createProducts = function(products) {
-        let dbModels = [];
-
-        for(let product of products) {
-            dbModels.push(this.mapToDbModel(product));
-        };
-
-        return this.Product.bulkCreate(dbModels);
     }
 
     updateProduct = function(productId, product) {
@@ -47,8 +42,8 @@ class ProductRepo extends BaseRepo {
     mapToDbModel = function(product) {
         return {
             category: product.category,
-            data: product.data,
-            productVariations: product.productVariations,
+            data: JSON.stringify(product.data),
+            productVariations: JSON.stringify(product.productVariations),
             infoUrl: product.infoUrl,
             vatGroup: product.vatGroup,
             isActive: product.isActive,
@@ -56,6 +51,20 @@ class ProductRepo extends BaseRepo {
             portfolioImageKey: product.imageKey
         };
     }
+
+    mapToClientModel = function(product) {
+        return {
+            id: product.id,
+            category: product.category,
+            data: JSON.parse(product.data),
+            productVariations: JSON.parse(product.productVariations),
+            infoUrl: product.infoUrl,
+            vatGroup: product.vatGroup,
+            isActive: product.isActive,
+            isInStock: product.isInStock,   
+            portfolioImageKey: product.imageKey
+        };
+    }    
 }
 
 export default new ProductRepo();

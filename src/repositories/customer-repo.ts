@@ -18,7 +18,9 @@ class CustomerRepo extends BaseRepo {
         filter = filter || {};
         filter.isDeleted = false;
 
-        return this.Customer.findAll({where:filter});
+        let dbCustomers = this.Customer.findAll({where:filter});
+
+        return dbCustomers.map(customer => this.mapToClientModel(customer));
     }
 
     createCustomer = function(customer) {
@@ -26,8 +28,9 @@ class CustomerRepo extends BaseRepo {
     }
 
     updateCustomer = function(customerId, customer) {
+        let dbCustomer = this.mapToDbModel(customer);
         return this.Customer.update(
-            this.mapToDbModel(customer),
+            dbCustomer,
             {
                 returning: true,
                 where: {id: customerId}
@@ -44,9 +47,26 @@ class CustomerRepo extends BaseRepo {
             phone: customer.phone,
             contactPerson: customer.contactPerson,
             isActive: customer.isActive,
-            deliveryAddress: customer.deliveryAddress,
-            invoiceAddress: customer.invoiceAddress,
-            note: customer.note,
+            deliveryAddress: JSON.stringify(customer.deliveryAddress),
+            invoiceAddress: JSON.stringify(customer.invoiceAddress),
+            note: JSON.stringify(customer.note),
+            type: customer.type
+        };
+    }
+
+    mapToClientModel = function(customer) {
+
+        return {
+            id: customer.id,
+            email: customer.email,
+            name: customer.name,
+            organizationNumber: customer.organizationNumber,
+            phone: customer.phone,
+            contactPerson: customer.contactPerson,
+            isActive: customer.isActive,
+            deliveryAddress: JSON.parse(customer.deliveryAddress),
+            invoiceAddress: JSON.parse(customer.invoiceAddress),
+            note: JSON.parse(customer.note),
             type: customer.type
         };
     }

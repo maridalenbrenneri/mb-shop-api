@@ -17,37 +17,12 @@ class UserRepo extends BaseRepo {
         return this.User.findOne({where:{email: email}});
     }
 
-    getUsers = function (filter) {
-        filter = filter || {};
-        filter.isDeleted = false;
-
-        return this.User.findAll({where:filter});
+    getUsers = function () {
+        return this.User.findAll();
     }
 
     createUser = function(user) {
-        return this.User.create(this.mapToDbModel(user));
-    }
-
-    updateUser = function(userId, user) {
-        return this.User.update(
-            this.mapToDbModel(user),
-            {
-                returning: true,
-                where: {id: userId}
-            }
-        );
-    }
-
-    mapToDbModel = function(user) {
-        return {
-            email: user.email,
-            password: user.password,
-            name: user.name,
-            organizationNumber: user.organizationNumber,
-            phone: user.phone,
-            role: user.role,
-            isActive: user.isActive
-        };
+        return this.User.create(user);
     }
 }
 

@@ -1,19 +1,19 @@
 import { Response, Request } from "express";
-import Sequelize from 'sequelize';
 import * as jwt from 'jsonwebtoken';
 import ControllerBase from './controller-base';
 import UserRepo from "../repositories/user-repo";
+import userService from "../services/user-service";
 
 class AuthController extends ControllerBase {
 
     /**
-     * 
+     * AUTH
      */
     authenticate = function (req: Request, res: Response) {
 
         UserRepo.getUserByEmail(req.body.email).then(user => {
             if(!user) {
-                return res.status(401).send(`[DEBUG] User ${req.body.email} was not found`); // todo: remove error msg
+                return res.status(401).send();
             }
 
             if(req.body.password == user.password) { // todo: bcrypt...
@@ -24,7 +24,7 @@ class AuthController extends ControllerBase {
                 };
 
                 let token = jwt.sign(userInfo, process.env.JWT_SECRET, {
-                    expiresIn: 86400 // expires in 24 hours
+                    expiresIn: 86400 * 7 // 1 week
                 });
 
                 return res.send({
@@ -43,13 +43,7 @@ class AuthController extends ControllerBase {
      * GET /users/me
      */
     getMe = function (req: Request, res: Response) {
-        UserRepo.getUser(req.user.id).then(user => {
-            if(!user) {
-                return res.status(404).send(`User ${req.body.email} was not found`);
-            }
-
-            return res.send(user);
-        });
+        return userService.getUser(req.user.id, res);
     }
 
     /**
@@ -57,33 +51,32 @@ class AuthController extends ControllerBase {
      */
     registerUser = function (req: Request, res: Response) {
 
+        return res.status(403);
+
+        // todo: We do nothing until full user registration is implemented
+
         // todo: check auth if role != customer
 
         // todo: bcrypt password...
 
-        let user = req.body;
-        user.role = 'customer';
-        user.isActive = true;
+        // let user = req.body;
+        // user.role = 'customer';
+        // user.isActive = true;
         
-        UserRepo.createUser(req.body).then(user => {
-            return res.send(user);
+        // UserRepo.createUser(req.body).then(user => {
+        //     return res.send(user);
           
-        }).catch(Sequelize.ValidationError, function (err) {
-            return res.status(422).send(err.errors);
-        });
+        // }).catch(Sequelize.ValidationError, function (err) {
+        //     return res.status(422).send(err.errors);
+        // });
     }
 
     /**
-     * 
+     * GET /api/users 
      */
     getUsers = function (req: Request, res: Response) {
-
-        let filter = { };
-    
-        UserRepo.getUsers(filter).then(users => {
-            res.send(users);
-        });
-    }
+        return userService.getUsers(res);
+    }  
 }
 
 export default new AuthController();

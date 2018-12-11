@@ -29,7 +29,7 @@ class ProductController {
    */
   getProducts = function (req: Request, res: Response) {
 
-    let filter = { isActive: true };
+    let filter = {  };
 
     productRepo.getProducts(filter).then(products => {
       res.send(products);
