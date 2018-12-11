@@ -10,8 +10,7 @@ class ProductRepo extends BaseRepo {
     }
 
     getProduct = function (productId: Number) {
-        let dbProduct = this.Product.findById(productId);
-        return this.mapToClientModel(dbProduct);
+        return this.Product.findById(productId);
     }
 
     getProducts = function (filter) {
@@ -20,51 +19,22 @@ class ProductRepo extends BaseRepo {
         filter = filter || {};
         filter.isDeleted = false;
 
-        let dbProducts = this.Product.findAll({where:filter});
-        
-        return dbProducts.map(p => self.mapToClientModel(p)); 
+        return this.Product.findAll({where:filter});
     }
 
     createProduct = function(product) {
-        return this.Product.create(this.mapToDbModel(product));
+        return this.Product.create(product);
     }
 
     updateProduct = function(productId, product) {
         return this.Product.update(
-            this.mapToDbModel(product),
+            product,
             {
                 returning: true,
                 where: {id: productId}
             }
         );
     }
-
-    mapToDbModel = function(product) {
-        return {
-            category: product.category,
-            data: JSON.stringify(product.data),
-            productVariations: JSON.stringify(product.productVariations),
-            infoUrl: product.infoUrl,
-            vatGroup: product.vatGroup,
-            isActive: product.isActive,
-            isInStock: product.isInStock,   
-            portfolioImageKey: product.imageKey
-        };
-    }
-
-    mapToClientModel = function(product) {
-        return {
-            id: product.id,
-            category: product.category,
-            data: JSON.parse(product.data),
-            productVariations: JSON.parse(product.productVariations),
-            infoUrl: product.infoUrl,
-            vatGroup: product.vatGroup,
-            isActive: product.isActive,
-            isInStock: product.isInStock,   
-            portfolioImageKey: product.imageKey
-        };
-    }    
 }
 
 export default new ProductRepo();

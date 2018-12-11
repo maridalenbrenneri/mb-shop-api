@@ -66,12 +66,15 @@ class OrderService {
     addOrderNote(orderNote: any, res: any): any {
         let self = this;
 
-        OrderValidator.validateOrderNote(orderNote);
+        OrderValidator.validateOrderNote(orderNote);    
 
         return orderRepo.getOrder(orderNote.orderId).then(order=> {
-            order.notes.push(orderNote);
 
-            return orderRepo.addOrderNote(order.id, order.notes).then(updatedOrder => {
+            let clientOrder = this.mapToClientModel(order);
+
+            clientOrder.notes.push(orderNote);
+
+            return orderRepo.addOrderNote(order.id, JSON.stringify(clientOrder.notes)).then(updatedOrder => {
                 return res.send(self.mapToClientModel(updatedOrder));
             });
         });
@@ -83,7 +86,7 @@ class OrderService {
             deliveryDate: order.deliveryDate,
             status: order.status,
             type: order.type,
-            customer: order.customer,
+            customer: JSON.stringify(order.customer),
             items: JSON.stringify(order.items),
             notes: JSON.stringify(order.notes),
             isRecurringOrder: order.isRecurringOrder,
@@ -92,13 +95,14 @@ class OrderService {
     }
 
     mapToClientModel = function(order) {
+
         return {
             id: order.id,
             orderDate: order.orderDate,
             deliveryDate: order.deliveryDate,
             status: order.status,
             type: order.type,
-            customer: order.customer,
+            customer: JSON.parse(order.customer),
             items: JSON.parse(order.items),
             notes: JSON.parse(order.notes),
             isRecurringOrder: order.isRecurringOrder,

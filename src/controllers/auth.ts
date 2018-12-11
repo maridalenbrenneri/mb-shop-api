@@ -24,7 +24,7 @@ class AuthController extends ControllerBase {
                 };
 
                 let token = jwt.sign(userInfo, process.env.JWT_SECRET, {
-                    expiresIn: 86400 * 7 // 1 week
+                    expiresIn: 86400 * 365 // 1 year
                 });
 
                 return res.send({

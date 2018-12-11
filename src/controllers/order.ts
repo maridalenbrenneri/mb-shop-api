@@ -53,8 +53,6 @@ class OrderController {
    */
   completeOrder (req: Request, res: Response, next: any) {
 
-    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
-
     return orderService.updateOrderStatus(req.params.id, "completed", res);
 
   }
@@ -63,8 +61,6 @@ class OrderController {
    * POST /orders/:id/cancel
    */
   cancelOrder (req: Request, res: Response, next: any) {
-
-    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
 
     return orderService.updateOrderStatus(req.params.id, "canceled", res);
 
@@ -75,8 +71,6 @@ class OrderController {
    */
   processOrder (req: Request, res: Response, next: any) {
 
-    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
-
     return orderService.updateOrderStatus(req.params.id, "processing", res);
 
   }
@@ -85,8 +79,6 @@ class OrderController {
    * POST /orders/:id/process
    */
   addOrderNote (req: Request, res: Response, next: any) {
-
-    // todo: check if order is owned by current user (or current user is store-manager) Same for all update functions.
 
     return orderService.addOrderNote(req.body, res);
 

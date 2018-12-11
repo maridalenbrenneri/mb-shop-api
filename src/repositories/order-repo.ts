@@ -42,16 +42,14 @@ class OrderRepo extends BaseRepo {
         );
     }
 
-    addOrderNote = function(orderId: number, orderNotes: Array<any>) {
-        return this.Order.update(
-            {
-                notes: orderNotes
-            },
-            {
-                returning: true,
-                where: { id: orderId }
-            }
-        ).then() 
+    addOrderNote = function(orderId: number, orderNotes: string) {
+        return this.Order.findById(orderId).then(order => {
+
+            return order.update(
+                {
+                    orderNotes: orderNotes
+                });
+        });
     }
 }
 

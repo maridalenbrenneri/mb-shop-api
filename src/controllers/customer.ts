@@ -74,8 +74,6 @@ class CustomerController {
                 res.send(updatedCustomer)
 
             }).catch(function (err) {
-                // todo: handle 400 err
-
                 logger.error(err);
                 res.status(500).send({ error: "An error occured when updating the customer: " + + err });
             });
