@@ -79,24 +79,6 @@ class ProductController {
         res.status(500).send({error: "An error occured when updating the product: " +  + err});
       });
   }
-
-  /**
-   * POST /products/create-many
-   */
-  createProducts = function (req: Request, res: Response) {
-
-    productRepo.createProducts(req.body).then(products => {
-      if(!products) {
-        return res.send("No products created. Please verify your input.");  
-      }
-
-      res.send(products.length + " products created");
-    
-    }).catch(function (err) {
-      logger.error(err);
-      res.status(500).send({error: "An error occured when creating the products: " + err});
-    });
-  }
 }
 
 export default new ProductController();
