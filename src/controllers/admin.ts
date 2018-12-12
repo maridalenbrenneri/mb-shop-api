@@ -33,12 +33,13 @@ class AdminController extends ControllerBase {
   }
 
   testDb  = function (req: Request, res: Response) {
-    UserRepo.getUser(1).then(product => {
-      return res.send(product);
+    UserRepo.getUser(1).then(user => {
+      user.password = '';
+      return res.send(user);
 
     }).catch(function (err) {
       logger.error(err);
-      res.status(500).send({error: "An error occured when gettingdata. Error: " + err});
+      res.status(500).send({error: "An error occured when getting data. Error: " + err});
     });
   }
 }
