@@ -7,6 +7,7 @@ import ControllerBase from './controller-base';
 import SubscriptionRepo from "../repositories/subscription-repo";
 import customerRepo from "../repositories/customer-repo";
 import localIp from "local-ip";
+import product from "./product";
 
 class AdminController extends ControllerBase {
 
@@ -25,6 +26,20 @@ class AdminController extends ControllerBase {
     }).catch(function (err) {
       logger.error(err);
       res.status(500).send({error: "An error occured when creating the tables. Error: " + err});
+    });
+  }
+
+  hello = function (req: Request, res: Response) {
+    res.send("Hello MB API!");
+  }
+
+  testDb  = function (req: Request, res: Response) {
+    UserRepo.getUser(1).then(product => {
+      return res.send(product);
+
+    }).catch(function (err) {
+      logger.error(err);
+      res.status(500).send({error: "An error occured when gettingdata. Error: " + err});
     });
   }
 }

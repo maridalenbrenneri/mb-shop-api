@@ -74,6 +74,9 @@ import { ValidationError } from "./models/validation-error";
 // Admin routes
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
 
+app.get("/api/admin/hello", adminController.hello);
+app.get("/api/admin/testdb", adminController.testDb);
+
 // User and auth
 app.post("/api/authenticate", authController.authenticate);
 app.get("/api/users/me", isAuthenticated, authController.getMe);
