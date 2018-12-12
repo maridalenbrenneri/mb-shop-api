@@ -27,13 +27,9 @@ class ProductRepo extends BaseRepo {
     }
 
     updateProduct = function(productId, product) {
-        return this.Product.update(
-            product,
-            {
-                returning: true,
-                where: {id: productId}
-            }
-        );
+        return this.Product.findById(productId).then(dbProduct => {
+            return dbProduct.update(product);
+        });
     }
 }
 

@@ -1,6 +1,7 @@
 import { Response } from "express";
 import productRepo from '../repositories/product-repo';
 import logger from '../utils/logger';
+import { ProductValidator } from "../validators/product-validator";
 
 class ProductService {
 
@@ -26,9 +27,9 @@ class ProductService {
 
         return productRepo.getProducts(filter).then(products => {
 
-            let clientProducts = products.map(p => self.mapToClientModel(p)); 
+            let clientProducts = products.map(p => self.mapToClientModel(p));
             return res.send(clientProducts);
-            
+
         }).catch(function (err) {
             logger.error(err);
             return res.status(500).send({ error: "An error occured when getting the products: " + err });
@@ -37,8 +38,8 @@ class ProductService {
 
     createProduct = function (product: any, res: Response) {
         let self = this;
-        
-        // todo: validate 
+
+        ProductValidator.validate(product);
 
         let dbProduct = self.mapToDbModel(product);
 
@@ -55,27 +56,23 @@ class ProductService {
     updateProduct = function (product: any, res: Response) {
         let self = this;
 
-        // todo: validate...
+        ProductValidator.validate(product);
 
         let dbProduct = self.mapToDbModel(product);
 
-        return productRepo.updateProduct(dbProduct.id, dbProduct)
-            .then(function ([rowsUpdate, [updatedProduct]]) {
+        return productRepo.updateProduct(dbProduct.id, dbProduct).then(updatedProduct => {
 
-                if (!updatedProduct) {
-                    return res.status(404).send();
-                }
+            return res.send(self.mapToClientModel(updatedProduct));
 
-                return res.send(self.mapToClientModel(updatedProduct));
-
-            }).catch(function (err) {
-                logger.error(err);
-                return res.status(500).send({ error: "An error occured when updating the product: " + err });
-            });
+        }).catch(function (err) {
+            logger.error(err);
+            return res.status(500).send({ error: "An error occured when updating the product: " + err });
+        });
     }
 
-    private mapToDbModel = function (product) {
+    mapToDbModel = function (product) {
         return {
+            id: product.id,
             category: product.category,
             data: JSON.stringify(product.data),
             productVariations: JSON.stringify(product.productVariations),
@@ -87,7 +84,7 @@ class ProductService {
         };
     }
 
-    private mapToClientModel = function (product) {
+    mapToClientModel = function (product) {
         return {
             id: product.id,
             category: product.category,

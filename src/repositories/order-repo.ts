@@ -5,8 +5,8 @@ class OrderRepo extends BaseRepo {
 
     private Order = this.sequelize.define('order', orderModel);
 
-    createTable = function(forceCreate) {
-        return this.Order.sync({force: forceCreate}); // todo: force only during initial development...
+    createTable = function (forceCreate) {
+        return this.Order.sync({ force: forceCreate }); // todo: force only during initial development...
     }
 
     getOrder = function (orderId: Number) {
@@ -19,30 +19,29 @@ class OrderRepo extends BaseRepo {
         filter.isDeleted = false;
 
         return this.Order.findAll({
-            where:filter,
+            where: filter,
             order: [
                 ['createdAt', 'DESC']
             ]
         });
     }
 
-    createOrder = function(order) {
+    createOrder = function (order) {
         return this.Order.create(order);
     }
 
-    updateOrderStatus = function(orderId, newStatus) {
-        return this.Order.update(
-            {
-                status: newStatus
-            },
-            {
-                returning: true,
-                where: { id: orderId }
-            }
-        );
+    updateOrderStatus = function (orderId, newStatus) {
+
+        return this.Order.findById(orderId).then(order => {
+
+            return order.update(
+                {
+                    status: newStatus
+                });
+        });
     }
 
-    addOrderNote = function(orderId: number, orderNotes: string) {
+    addOrderNote = function (orderId: number, orderNotes: string) {
         return this.Order.findById(orderId).then(order => {
 
             return order.update(

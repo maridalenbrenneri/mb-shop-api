@@ -3,6 +3,7 @@ import orderRepo  from '../repositories/order-repo';
 import { OrderValidator } from '../validators/order-validator';
 import { ValidationError } from "../models/validation-error";
 import { OrderStatus } from "../constants";
+import logger from '../utils/logger';
 
 class OrderService {
 
@@ -21,11 +22,7 @@ class OrderService {
             return res.send(clientOrder);
 
         }).catch(function (err) { 
-            // todo: this catch should be handled by global err handler, but doesn't seem to work for some reason...
-            if (err instanceof ValidationError) {
-                return res.status(422).send({validationError: err.message});
-            } 
-            return res.status(500).send({error: err.message});
+            self.handleError(err, res);
         });
     }
 
@@ -52,15 +49,14 @@ class OrderService {
         return orderRepo.getOrder(orderId).then(function(order) {
             OrderValidator.validateStatus(order.status, newStatus);
 
-            return orderRepo.updateOrderStatus(orderId, newStatus).then(function([ ordersUpdated, [updatedOrder] ]) {
-
-                if (ordersUpdated === 0) {
-                    return res.status(404).send();
-                } 
+            return orderRepo.updateOrderStatus(orderId, newStatus).then(updatedOrder => {
           
                 return res.send(self.mapToClientModel(updatedOrder));
             });
-        });
+
+        }).catch(function (err) {
+            self.handleError(err, res);
+        });;
     }
 
     addOrderNote(orderNote: any, res: any): any {
@@ -75,9 +71,22 @@ class OrderService {
             clientOrder.notes.push(orderNote);
 
             return orderRepo.addOrderNote(order.id, JSON.stringify(clientOrder.notes)).then(updatedOrder => {
+
                 return res.send(self.mapToClientModel(updatedOrder));
             });
-        });
+
+        }).catch(function (err) {
+            self.handleError(err, res);
+        });;
+    }
+
+    handleError(err: any, res: Response) {
+        if (err instanceof ValidationError) {
+            return res.status(422).send({validationError: err.message});
+        } 
+
+        logger.error(err);
+        return res.status(500).send({ error: "An error occured when updating the order: " + err });
     }
     
     mapToDbModel = function(order) {

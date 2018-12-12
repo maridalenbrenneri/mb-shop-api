@@ -64,19 +64,14 @@ class CustomerController {
 
         // todo: validate body content...
 
-        customerRepo.updateCustomer(req.params.id, req.body)
-            .then(function ([rowsUpdate, [updatedCustomer]]) {
-                if (!updatedCustomer) {
-                    res.status(404).send("Customer was not found");
-                    return;
-                }
+        customerRepo.updateCustomer(req.params.id, req.body).then(updatedCustomer => {
 
-                res.send(updatedCustomer)
+            res.send(updatedCustomer)
 
-            }).catch(function (err) {
-                logger.error(err);
-                res.status(500).send({ error: "An error occured when updating the customer: " + + err });
-            });
+        }).catch(function (err) {
+            logger.error(err);
+            res.status(500).send({ error: "An error occured when updating the customer: " + err });
+        });
     }
 }
 

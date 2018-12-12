@@ -28,14 +28,12 @@ class CustomerRepo extends BaseRepo {
     }
 
     updateCustomer = function(customerId, customer) {
-        let dbCustomer = this.mapToDbModel(customer);
-        return this.Customer.update(
-            dbCustomer,
-            {
-                returning: true,
-                where: {id: customerId}
-            }
-        );
+        let self = this;
+
+        return this.Customer.findById(customerId).then(dbCustomer => {
+            
+            return dbCustomer.update(self.mapToDbModel(customer));
+        });
     }
 
     mapToDbModel = function(customer) {
