@@ -48,6 +48,22 @@ export const orderModel = {
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
+export const giftSubscriptionModel = {
+    status: { type: STRING, allowNull: false },
+    wooOrderId: { type: INTEGER.UNSIGNED, allowNull: false },
+    orderDate: { type: DATE, allowNull: false },
+    firstDeliveryDate: { type: DATE, allowNull: false },
+    lastDeliveryDate: { type: DATE, allowNull: false },
+    frequence: { type: STRING, allowNull: false },
+    quantity: { type: INTEGER.UNSIGNED, allowNull: false },
+    customerName: { type: STRING },
+    recipient_name: { type: STRING, allowNull: false },
+    recipient_address: { type: Sequlize.TEXT, allowNull: false },
+    message_to_recipient: { type: STRING },
+    note: { type: STRING },
+    isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
+}
+
 export const subscriptionModel = {
     parentOrderId: { type: INTEGER, allowNull: false },
     userId: { type: INTEGER, allowNull: false },

@@ -7,6 +7,7 @@ import ControllerBase from './controller-base';
 import SubscriptionRepo from "../repositories/subscription-repo";
 import customerRepo from "../repositories/customer-repo";
 import product from "./product";
+import giftSubscriptionRepo from "../repositories/gift-subscription-repo";
 
 class AdminController extends ControllerBase {
 
@@ -17,6 +18,8 @@ class AdminController extends ControllerBase {
       // customerRepo.createTable(true),
       // ProductRepo.createTable(true),
       // OrderRepo.createTable(true),
+
+     // giftSubscriptionRepo.createTable(true)
 
     ]).then(() => {
       logger.info("Tables created");

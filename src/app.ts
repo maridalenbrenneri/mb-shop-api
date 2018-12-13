@@ -3,6 +3,7 @@ import { Response, Request } from "express";
 import * as bodyParser from "body-parser";
 import * as jwt from 'jsonwebtoken';
 import logger from "./utils/logger";
+import { ValidationError } from "./models/validation-error";
 
 // Load environemnt variables
 require('dotenv').config();
@@ -66,8 +67,10 @@ import authController from './controllers/auth';
 import customerController from './controllers/customer';
 import productController from './controllers/product';
 import orderController from './controllers/order';
+import giftSubscriptionController from './controllers/gift-subscription';
+
 //import subscriptionController from './controllers/subscription';
-import { ValidationError } from "./models/validation-error";
+
 
 /*** API ***/
 
@@ -82,8 +85,12 @@ app.post("/api/authenticate", authController.authenticate);
 app.get("/api/users/me", isAuthenticated, authController.getMe);
 app.get("/api/users", isUserInAdmin, authController.getUsers);
 
-// Not supported right now
+// Not supported for now
 // app.post("/api/users", authController.registerUser);
+
+// Gift subscriptions (Integration with Woo)
+app.get('/api/giftsubscriptions', giftSubscriptionController.getGiftSubscriptions);
+app.post('/api/giftsubscriptions/import', giftSubscriptionController.importGiftSubscriptions);
 
 // Customers
 app.get("/api/customers", customerController.getCustomers);
