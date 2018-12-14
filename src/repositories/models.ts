@@ -54,12 +54,14 @@ export const giftSubscriptionModel = {
     orderDate: { type: DATE, allowNull: false },
     firstDeliveryDate: { type: DATE, allowNull: false },
     lastDeliveryDate: { type: DATE, allowNull: false },
-    frequence: { type: STRING, allowNull: false },
+    numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
+    frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },
     customerName: { type: STRING },
     recipient_name: { type: STRING, allowNull: false },
+    recipient_email: { type: STRING, allowNull: false },
     recipient_address: { type: Sequlize.TEXT, allowNull: false },
-    message_to_recipient: { type: STRING },
+    message_to_recipient: { type: TEXT },
     note: { type: STRING },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }

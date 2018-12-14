@@ -5,6 +5,10 @@ export class SubscriptionDateHelper {
     static getNextDeliveryDateForMonthly(originDate = null) {
         let origin = !originDate ? moment() : moment(originDate);
 
+        if(!origin.isValid()) {
+            throw new Error("Invalid date: " + origin);
+        }
+        
         let dates = this.getAllDatesForDeliveryWeekdayInMonth(origin);
 
         if(dates[0].date() <= origin.date()) {
@@ -31,6 +35,10 @@ export class SubscriptionDateHelper {
 
     static getNextDeliveryDateForFortnightly(originDate = null) {
         let origin = !originDate ? moment() : moment(originDate);
+
+        if(!origin.isValid()) {
+            throw new Error("Invalid date: " + origin);
+        }
 
         let dates = this.getAllDatesForDeliveryWeekdayInMonth(origin);
 

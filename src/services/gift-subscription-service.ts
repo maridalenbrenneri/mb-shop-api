@@ -73,25 +73,29 @@ class GiftSubscriptionService {
 
     async import(res: Response) {
 
-        giftSubscriptionRepo.getGiftSubscriptions({}).then(giftSubscriptions => {
+        let importedCount = 0;
 
-            wooService.getActiveGiftSubscriptions().then(async wooSubscriptions => {
-                
-                for(const wooSubscription of wooSubscriptions) {
-
-                    let sub = giftSubscriptions.find(s => s.wooOrderId == wooSubscription);
-
-                    if(!sub) {
-                        await giftSubscriptionRepo.createGiftSubscription(wooSubscription);
-                    }
+        try {
+            const giftSubscriptions = await giftSubscriptionRepo.getGiftSubscriptions({});
+            logger.debug('From db ' + giftSubscriptions.length);
+            const wooSubscriptions = await wooService.getActiveGiftSubscriptions();
+                    
+            for(const wooSubscription of wooSubscriptions) {
+    
+                let sub = giftSubscriptions.find(s => s.wooOrderId == wooSubscription.wooOrderId);
+    
+                if(!sub) {
+                    await giftSubscriptionRepo.createGiftSubscription(wooSubscription);
+                    importedCount++;
                 }
-            });
-            
-
-        }).catch(function (err) {
-            logger.error(err);
-            return res.status(500).send({ error: "An error occured when getting the gift subscriptions: " + err });
-        });
+            }
+    
+            return res.send({count: importedCount});
+        }
+        catch(e) {
+            logger.error(e);
+            return res.status(500).send({ error: "An error occured when importing gift subscriptions: " + e });
+        }
 
     }
 
@@ -106,9 +110,11 @@ class GiftSubscriptionService {
             frequence: giftSubscription.frequence,
             quantity: giftSubscription.quantity,
             customerName: giftSubscription.customerName,
-            recipient_address: JSON.stringify(giftSubscription.recipient_address),
             recipient_name: giftSubscription.recipient_name,
-            note: giftSubscription.note,
+            recipient_email: giftSubscription.recipient_email,
+            recipient_address: JSON.stringify(giftSubscription.recipient_address),
+            message_to_recipient: giftSubscription.message_to_recipient,
+            note: giftSubscription.note
         };
     }
 
@@ -123,9 +129,11 @@ class GiftSubscriptionService {
             frequence: giftSubscription.frequence,
             quantity: giftSubscription.quantity,
             customerName: giftSubscription.customerName,
-            recipient_address: JSON.parse(giftSubscription.recipient_address),
             recipient_name: giftSubscription.recipient_name,
-            note: giftSubscription.note,
+            recipient_email: giftSubscription.recipient_email,
+            recipient_address: JSON.parse(giftSubscription.recipient_address),
+            message_to_recipient: giftSubscription.message_to_recipient,
+            note: giftSubscription.note
         };
     }
 }

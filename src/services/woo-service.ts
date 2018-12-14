@@ -1,9 +1,11 @@
-import { Response } from "express";
 import * as moment from 'moment';
 import * as https from 'https';
+import { SubscriptionFrequence } from "../constants";
+import logger from "../utils/logger";
+import { SubscriptionDateHelper } from './subscription-date-helper';
 
 const WOO_API_BASE_URL = 'https://maridalenbrenneri.no/wp-json/wc/v2/';
-const WOO_SUBSCRIPTION_API_BASE_URL = 'https://maridalenbrenneri.no/wp-json/wc/v1/';
+//const WOO_SUBSCRIPTION_API_BASE_URL = 'https://maridalenbrenneri.no/wp-json/wc/v1/';
 const GIFT_SUBSCRIPTION_GIFT_ID = 968;
 
 class WooService {
@@ -47,6 +49,9 @@ class WooService {
         for (const order of orders) {
 
             const orderId = order.id;
+            const orderNote = order.customer_note;
+            const orderDate = order.date_created;
+            const orderCustomerName = order.billing.first_name + ' ' + order.billing.last_name;
 
             for (const item of order.line_items) {
                 if (item.product_id === GIFT_SUBSCRIPTION_GIFT_ID) {
@@ -63,6 +68,9 @@ class WooService {
                     const today = moment().startOf('day');
 
                     item.orderId = orderId;
+                    item.orderDate = orderDate;
+                    item.orderNote = orderNote
+                    item.orderCustomerName = orderCustomerName;
 
                     if (today <= activeTo) {
                         activeGiftSubscriptions.push(item);
@@ -79,23 +87,60 @@ class WooService {
         return !res ? null : res.value;
     }
 
-    private mapFromWooToDbModel(wooGiftSubscriptionOrder: any) {
+    private mapFromWooToDbModel(orderItem: any) {
+
+        const nrOfMonths = +this.resolveMetadataValue(orderItem.meta_data, 'antall-manader');
+
+        const frequency = this.resolveMetadataValue(orderItem.meta_data, 'levering').includes('Annenhver uke') 
+                            ? SubscriptionFrequence.fortnightly 
+                            : SubscriptionFrequence.monthly;
+
+        // todo: Handle norwegian format "01.01.2018" AND normal format, could come in both...
+
+        let startDate = moment(this.resolveMetadataValue(orderItem.meta_data, 'abo_start'));
+        if(!startDate.isValid()) {
+            logger.warn("Invalid start date for gift subscription found when importing, woo order id " + orderItem.orderId);
+            startDate = moment();
+        }
+        const firstDeliveryDate = this.resolveNextDeliveryDate(startDate.toDate(), frequency);
+        
+        let endDate = moment(startDate).add(nrOfMonths, 'M');
+        if(!endDate.isValid()) {
+            logger.warn("Invalid end date for gift subscription found when importing, woo order id " + orderItem.orderId);
+            endDate = moment();
+        }
+        const lastDeliveryDate = this.resolveNextDeliveryDate(endDate.toDate(), frequency);
+
         const model = {
-            wooOrderId: wooGiftSubscriptionOrder.orderId,
-            status: 'active', // wooGiftSubscriptionOrder.status,
-            orderDate: new Date(), // wooGiftSubscriptionOrder.orderDate,
-            firstDeliveryDate: new Date(), // wooGiftSubscriptionOrder.firstDeliveryDate,
-            lastDeliveryDate: new Date(), // wooGiftSubscriptionOrder.lastDeliveryDate,
-            frequence: 'monthly', // wooGiftSubscriptionOrder.frequence,
-            quantity: 1,
-            recipient_address: JSON.stringify({street: 'Qwerty'}),
-            recipient_name: 'Qwerty',
-            customerName: 'Qwerty',
-            note: wooGiftSubscriptionOrder.note,
+            wooOrderId: orderItem.orderId,
+            status: 'n/a',
+            orderDate: orderItem.orderDate,
+            firstDeliveryDate: firstDeliveryDate,
+            lastDeliveryDate: lastDeliveryDate,
+            frequence: frequency,
+            numberOfMonths: nrOfMonths,
+            quantity: +this.resolveMetadataValue(orderItem.meta_data, 'poser'),
+            customerName: orderItem.orderCustomerName,
+            recipient_name: this.resolveMetadataValue(orderItem.meta_data, 'abo_name'),
+            recipient_email: this.resolveMetadataValue(orderItem.meta_data, 'abo_email'),
+            recipient_address: JSON.stringify({
+                street1: this.resolveMetadataValue(orderItem.meta_data, 'abo_address1'),
+                street2: this.resolveMetadataValue(orderItem.meta_data, 'abo_address2'),
+                zipCode: this.resolveMetadataValue(orderItem.meta_data, 'abo_zip'),
+                place: this.resolveMetadataValue(orderItem.meta_data, 'city')
+            }), 
+            message_to_recipient: this.resolveMetadataValue(orderItem.meta_data, 'abo_msg_retriever'),
+            note: orderItem.orderNote
         }
 
         return model;
     }    
+
+    private resolveNextDeliveryDate(fromDate: Date, frequency: number) : Date {
+        return frequency == SubscriptionFrequence.fortnightly 
+                ? SubscriptionDateHelper.getNextDeliveryDateForFortnightly(fromDate)
+                : SubscriptionDateHelper.getNextDeliveryDateForMonthly(fromDate);
+    }
 }
 
 export default new WooService();

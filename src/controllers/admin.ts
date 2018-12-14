@@ -19,7 +19,7 @@ class AdminController extends ControllerBase {
       // ProductRepo.createTable(true),
       // OrderRepo.createTable(true),
 
-     // giftSubscriptionRepo.createTable(true)
+      giftSubscriptionRepo.createTable(true)
 
     ]).then(() => {
       logger.info("Tables created");
