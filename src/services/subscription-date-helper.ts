@@ -1,7 +1,14 @@
 import * as moment from 'moment';
-import { Constants } from '../constants';
+import { Constants, SubscriptionFrequence } from '../constants';
 
 export class SubscriptionDateHelper {
+
+    static resolveNextDeliveryDate(fromDate: Date, frequency: number) : Date {
+        return frequency == SubscriptionFrequence.fortnightly 
+                ? SubscriptionDateHelper.getNextDeliveryDateForFortnightly(fromDate)
+                : SubscriptionDateHelper.getNextDeliveryDateForMonthly(fromDate);
+    }
+
     static getNextDeliveryDateForMonthly(originDate = null) {
         let origin = !originDate ? moment() : moment(originDate);
 

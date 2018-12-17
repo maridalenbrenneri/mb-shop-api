@@ -14,35 +14,40 @@ class WooService {
         let self = this;
         const url = WOO_API_BASE_URL + 'orders?' + process.env.WOO_SECRET_PARAM + '&product=' + GIFT_SUBSCRIPTION_GIFT_ID;
 
-        return new Promise<Array<any>>(function(resolve, reject) {
+        return new Promise<Array<any>>(function (resolve, reject) {
 
             https.get(url, (orderResponse) => {
 
-                if(orderResponse.statusCode == 401) {
+                if (orderResponse.statusCode == 401) {
                     reject(new Error('Not authorized with Woo'))
                 }
-    
+
                 orderResponse.setEncoding('utf8');
                 let rawData = '';
                 orderResponse.on('data', (chunk) => { rawData += chunk; });
                 orderResponse.on('end', () => {
-                  try {
-                    const activeSubscriptions = self.filterActiveGiftSubscriptions(JSON.parse(rawData));
-                    const models =  activeSubscriptions.map(s => self.mapFromWooToDbModel(s));
-                    resolve(models);
-                    
-                  } catch (e) {
-                    reject(e)
-                  }
+                    try {
+                        return resolve(self.filterActiveGiftSubscriptions(JSON.parse(rawData)));
+
+                    } catch (e) {
+                        reject(e)
+                    }
                 });
-    
+
             }).on('error', (e) => {
                 reject(e);
             });
         });
     }
 
-    private filterActiveGiftSubscriptions(orders: any) : Array<any> {
+    resolveLastDeliveryDate(giftSubscription) {
+        const date = moment(giftSubscription.firstDeliveryDate).add(giftSubscription.numberOfMonths - 1, 'M');
+        return SubscriptionDateHelper.resolveNextDeliveryDate(date.toDate(), giftSubscription.frequency); 
+    }
+
+    private filterActiveGiftSubscriptions(orders: any): Array<any> {
+        const self = this;
+        const today = moment().startOf('day');
 
         const activeGiftSubscriptions = new Array<any>();
 
@@ -56,24 +61,14 @@ class WooService {
             for (const item of order.line_items) {
                 if (item.product_id === GIFT_SUBSCRIPTION_GIFT_ID) {
 
-                    const startDateString = this.resolveMetadataValue(item.meta_data, 'abo_start');
-
-                    const length = this.resolveMetadataValue(item.meta_data, 'antall-maneder');
-
-                    const startDate = moment(startDateString, 'DD.MM.YYYY');
-
-                    const activeFrom = moment(startDate).add(-7, 'days');
-                    const activeTo = moment(activeFrom).add(+length, 'months');
-
-                    const today = moment().startOf('day');
-
                     item.orderId = orderId;
                     item.orderDate = orderDate;
                     item.orderNote = orderNote
                     item.orderCustomerName = orderCustomerName;
 
-                    if (today <= activeTo) {
-                        activeGiftSubscriptions.push(item);
+                    let dbItem = self.mapFromWooToDbModel(item);
+                    if(today <= moment(self.resolveLastDeliveryDate(dbItem))) {
+                        activeGiftSubscriptions.push(dbItem);
                     }
                 }
             }
@@ -87,36 +82,67 @@ class WooService {
         return !res ? null : res.value;
     }
 
+    private resolveNumberOfMOnths(orderItem: any) {
+
+        // Id's from Woo Product Variation (Not very robust solution...)
+
+        switch(orderItem.variation_id) {
+            case 998:
+            case 1002:
+            case 1006:
+                return 1;
+            case 999:
+            case 1003:
+            case 1007:
+                return 3;
+            case 1000:
+            case 1004:
+            case 1008:
+            case 1012:
+                return 6;    
+            case 1001:
+            case 1005:
+            case 1009:
+            case 1019:
+                return 12;
+        }
+
+        logger.warn("Unsupported Product Variation,  order id: " + orderItem.orderId + " ,variation id: " + orderItem.variation_id);
+
+        return 0;
+
+        // throw new Error("Unsupported Product Variation,  order id: " + orderItem.orderId + " ,variation id: " + orderItem.variation_id);
+    } 
+
     private mapFromWooToDbModel(orderItem: any) {
 
-        const nrOfMonths = +this.resolveMetadataValue(orderItem.meta_data, 'antall-manader');
+        const df = this.resolveMetadataValue(orderItem.meta_data, 'levering');
+        const frequency = df && df.includes('Annenhver uke') 
+            ? SubscriptionFrequence.fortnightly
+            : SubscriptionFrequence.monthly;
 
-        const frequency = this.resolveMetadataValue(orderItem.meta_data, 'levering').includes('Annenhver uke') 
-                            ? SubscriptionFrequence.fortnightly 
-                            : SubscriptionFrequence.monthly;
-
-        // todo: Handle norwegian format "01.01.2018" AND normal format, could come in both...
-
-        let startDate = moment(this.resolveMetadataValue(orderItem.meta_data, 'abo_start'));
-        if(!startDate.isValid()) {
-            logger.warn("Invalid start date for gift subscription found when importing, woo order id " + orderItem.orderId);
-            startDate = moment();
-        }
-        const firstDeliveryDate = this.resolveNextDeliveryDate(startDate.toDate(), frequency);
+        const nrOfMonths = this.resolveNumberOfMOnths(orderItem);
         
-        let endDate = moment(startDate).add(nrOfMonths, 'M');
-        if(!endDate.isValid()) {
-            logger.warn("Invalid end date for gift subscription found when importing, woo order id " + orderItem.orderId);
-            endDate = moment();
+        let startDate = null;
+        let startDateString = this.resolveMetadataValue(orderItem.meta_data, 'abo_start');
+
+        if(!startDateString) {
+            startDate = moment(orderItem.orderDate);
+        } else {
+            const regexp = new RegExp('..\...\.....');
+            startDate = regexp.test(startDateString)
+                ? moment(startDateString, 'DD.MM.YYYY')
+                : moment(startDateString)
         }
-        const lastDeliveryDate = this.resolveNextDeliveryDate(endDate.toDate(), frequency);
+
+        // Check from day before in case the date is an actual delivery date (then next would have been selected).
+        const firstDeliveryDate = SubscriptionDateHelper.resolveNextDeliveryDate(startDate.add(-1, 'd').toDate(), frequency);
 
         const model = {
             wooOrderId: orderItem.orderId,
             status: 'n/a',
             orderDate: orderItem.orderDate,
             firstDeliveryDate: firstDeliveryDate,
-            lastDeliveryDate: lastDeliveryDate,
             frequence: frequency,
             numberOfMonths: nrOfMonths,
             quantity: +this.resolveMetadataValue(orderItem.meta_data, 'poser'),
@@ -128,18 +154,12 @@ class WooService {
                 street2: this.resolveMetadataValue(orderItem.meta_data, 'abo_address2'),
                 zipCode: this.resolveMetadataValue(orderItem.meta_data, 'abo_zip'),
                 place: this.resolveMetadataValue(orderItem.meta_data, 'city')
-            }), 
+            }),
             message_to_recipient: this.resolveMetadataValue(orderItem.meta_data, 'abo_msg_retriever'),
             note: orderItem.orderNote
         }
 
         return model;
-    }    
-
-    private resolveNextDeliveryDate(fromDate: Date, frequency: number) : Date {
-        return frequency == SubscriptionFrequence.fortnightly 
-                ? SubscriptionDateHelper.getNextDeliveryDateForFortnightly(fromDate)
-                : SubscriptionDateHelper.getNextDeliveryDateForMonthly(fromDate);
     }
 }
 

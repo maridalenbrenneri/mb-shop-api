@@ -53,7 +53,6 @@ export const giftSubscriptionModel = {
     wooOrderId: { type: INTEGER.UNSIGNED, allowNull: false },
     orderDate: { type: DATE, allowNull: false },
     firstDeliveryDate: { type: DATE, allowNull: false },
-    lastDeliveryDate: { type: DATE, allowNull: false },
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
     frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },

@@ -3,6 +3,8 @@ import giftSubscriptionRepo from '../repositories/gift-subscription-repo';
 import logger from '../utils/logger';
 import wooService from './woo-service';
 import { GiftSubscriptionValidator } from "../validators/gift-subscription-validator";
+import { SubscriptionDateHelper } from "./subscription-date-helper";
+import moment = require("moment");
 
 class GiftSubscriptionService {
 
@@ -77,7 +79,6 @@ class GiftSubscriptionService {
 
         try {
             const giftSubscriptions = await giftSubscriptionRepo.getGiftSubscriptions({});
-            logger.debug('From db ' + giftSubscriptions.length);
             const wooSubscriptions = await wooService.getActiveGiftSubscriptions();
                     
             for(const wooSubscription of wooSubscriptions) {
@@ -106,7 +107,7 @@ class GiftSubscriptionService {
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,
-            lastDeliveryDate: giftSubscription.lastDeliveryDate,
+            numberOfMonths: giftSubscription.numberOfMonths,
             frequence: giftSubscription.frequence,
             quantity: giftSubscription.quantity,
             customerName: giftSubscription.customerName,
@@ -125,7 +126,8 @@ class GiftSubscriptionService {
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,
-            lastDeliveryDate: giftSubscription.lastDeliveryDate,
+            lastDeliveryDate: wooService.resolveLastDeliveryDate(giftSubscription),
+            numberOfMonths: giftSubscription.numberOfMonths,
             frequence: giftSubscription.frequence,
             quantity: giftSubscription.quantity,
             customerName: giftSubscription.customerName,
@@ -136,6 +138,7 @@ class GiftSubscriptionService {
             note: giftSubscription.note
         };
     }
+   
 }
 
 export default new GiftSubscriptionService();
