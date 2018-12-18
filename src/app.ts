@@ -88,7 +88,7 @@ app.get("/api/users", isUserInAdmin, authController.getUsers);
 // app.post("/api/users", authController.registerUser);
 
 // Shipping (Integration with Cargonizer)
-app.post('/api/shipping/ship-gift-subscription', shippingController.CreateConsignmentForGiftSubscription);
+app.post('/api/shipping/ship-gift-subscription',  isUserInSuperuser, shippingController.CreateConsignmentForGiftSubscription);
 
 // Gift subscriptions (Integration with Woo)
 app.get('/api/giftsubscriptions', isUserInSuperuser, giftSubscriptionController.getGiftSubscriptions);

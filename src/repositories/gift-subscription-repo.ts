@@ -14,8 +14,6 @@ class GiftSubscriptionRepo extends BaseRepo {
     }
 
     getGiftSubscriptions = function (filter) {
-        let self = this;
-
         filter = filter || {};
         filter.isDeleted = false;
 

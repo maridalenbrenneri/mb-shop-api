@@ -1,20 +1,21 @@
 import * as http from 'http';
 import logger from '../utils/logger';
 
+
 export class ShippingType {
-    static readonly standard_private 	= 1;
-    static readonly standard_business 	= 2;
+	static readonly standard_private = 1;
+	static readonly standard_business = 2;
 }
 
 export class ShippingCustomerInfo {
-    email: string;
-    phone: string;
-    name: string;
-    street1: string;
-    street2: string;
-    zipCode: string;
-    place: string;
-	country: string;	
+	email: string;
+	phone: string;
+	name: string;
+	street1: string;
+	street2: string;
+	zipCode: string;
+	place: string;
+	country: string;
 	contactPerson: string;
 	reference: string;
 }
@@ -26,11 +27,11 @@ export class CargonizerService {
 
 	private sandbox_consignment_url = "http://sandbox.cargonizer.no/consignments.xml";
 	private sandbox_transport_agreement_url = "http://sandbox.cargonizer.no/transport_agreements.xml";
-	private sandbox_service_partners_url = "http://sandbox.cargonizer.no/service_partners.xml";
+	private sandbox_service_partners_url = "http://cargonizer.no/service_partners.xml"; // use prod, sandbox doesn't work (read only anyway)
 
 	private api_key;
 	private sender_id;
-	private $curl; 
+	private $curl;
 	private data_xml = "<xml></xml>";
 	private data = Array<any>();
 	private pkg_number;
@@ -44,66 +45,46 @@ export class CargonizerService {
 	private transport_agreement;
 	private service_partners_url;
 
+
 	constructor() {
 
 		const useSandbox = process.env.CARGONIZER_USE_SANDBOX;
 
 		this.url = useSandbox ? this.sandbox_consignment_url : this.prod_consignment_url;
 		this.transport_agreement_url = useSandbox ? this.sandbox_transport_agreement_url : this.prod_transport_agreement_url;
-		this.service_partners_url = useSandbox ? this.sandbox_service_partners_url : this.prod_service_partners_url; 
+		this.service_partners_url = useSandbox ? this.sandbox_service_partners_url : this.prod_service_partners_url;
 
 		this.api_key = useSandbox ? process.env.CARGONIZER_SANDBOX_API_KEY : process.env.CARGONIZER_API_KEY;
 		this.sender_id = useSandbox ? process.env.CARGONIZER_SANDBOX_SENDER_ID : process.env.CARGONIZER_SENDER_ID;
 		this.transport_agreement = useSandbox ? process.env.CARGONIZER_SANDBOX_TRANSPORT_AGREEMENT : process.env.CARGONIZER_SANDBOX_AGREEMENT;
-		
+
 		// $this->curl = curl_init();
 		// curl_setopt($this->curl, CURLOPT_URL, $this->consignment_url); 
 		// curl_setopt($this->curl, CURLOPT_VERBOSE, 1); 
 		// curl_setopt($this->curl, CURLOPT_HEADER, 0); 
 		// curl_setopt($this->curl, CURLOPT_POST, 1); 
 		// curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1); 
-	}	
+	}
 
 	public async requestConsignment(customer: ShippingCustomerInfo, shippingType: number, orderWeight: number) {
 		this.pkg_number = "0";
 		this.urls = Array<any>();
 		this.cost_estimate = 0;
 
-		let service_partner = null;
-		
-		let servicePartnerResponse = await this.requestServicePartners('NO', customer.zipCode);
+		let service_partner = await this.requestServicePartners('NO', customer.zipCode);
 
-		logger.debug(servicePartnerResponse);
 
-		return servicePartnerResponse;
-		
-	//	let sxml = simplexml_load_string(servicePartnerResponse);
-		
+		return service_partner;
 
-		// if($sxml->{'service-partners'}->{'service-partner'} != NULL) {
-		// 	$partner = $sxml->{'service-partners'}->{'service-partner'}[0];
-		// 	$address = new mb_address(
-		// 		$partner->{'name'},
-		// 		$partner->{'address1'},
-		// 		$partner->{'address2'},
-		// 		$partner->{'postcode'},
-		// 		$partner->{'city'},
-		// 		$partner->{'country'}
-		// 	);
-		// 	$service_partner = new mb_service_partner(
-		// 		$partner->{'number'},
-		// 		$address
-		// 	);
-		// }
 
 		// $xml = this.toXmlFromWcOrder($wc_order, $wc_order_weight, service_partner); 
 
 		// curl_setopt($this->curl, CURLOPT_URL, $this->consignment_url);
 		// curl_setopt($this->curl, CURLOPT_POST, 1);
 		// curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "POST");
-		
+
 		// if($debug == 0) echo "XML<br>\n".print_r($xml,1)."<br>\n";
-		
+
 		// curl_setopt($this->curl, CURLOPT_POSTFIELDS, $xml);
 		// $headers = array(
 		// 	"X-Cargonizer-Key:".$this->api_key,
@@ -113,15 +94,15 @@ export class CargonizerService {
 		// );
 		// if($debug == 1) echo "Header\n".print_r($headers,1)."<br>\n";	
 		// curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers); 
-		
+
 		// if($debug == 0) $response = $this->runRequest($debug);
-		
+
 		// if($debug == 1) $this->parseResponse($response,$debug);
-		
+
 		// return $response;
 	}
 
-	
+
 	public requestTransportAgreements($url = "") {
 		// if($url == '') $url = $this->transport_agreement_url;
 		// echo "URL: $url<br>\n";
@@ -135,10 +116,10 @@ export class CargonizerService {
 		// );
 		// curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		// $response = $this->runRequest($debug);
-		
+
 		// return $response;
 	}
-		
+
 
 	private async requestServicePartners($country, $postcode) {
 		// let options = {
@@ -151,60 +132,49 @@ export class CargonizerService {
 		// 	}
 		// };
 
-	   const url = this.service_partners_url + '?country=' + $country + '&postcode=' + $postcode;
+		const url = this.service_partners_url + '?country=' + $country + '&postcode=' + $postcode;
 
-	   return new Promise<Array<any>>(function (resolve, reject) {
+		return new Promise<any>(function (resolve, reject) {
 
-			http.get(url, (response) => {
+			http.get(url, (resp) => {
+				let data = '';
 
-				// response.setEncoding('utf8');
-				let rawData = '';
-				response.on('data', (chunk) => { rawData += chunk; });
-				response.on('end', () => {
-					try {
-						return resolve(JSON.parse(rawData));
+				resp.setEncoding('utf8');
 
-					} catch (e) {
-						reject (e)
-					}
+				resp.on('data', (chunk) => {
+					data += chunk;
 				});
 
-			}).on('error', (e) => {
-				reject(e);
+				resp.on('end', () => {
+
+					require('xml2js').parseString(data, function (err, result) {
+					
+						const partners = result.results['service-partners'][0];
+						const partner = partners['service-partner'][0];
+
+						let servicePartner = {
+							service_partner_number: partner.number[0],
+							address: {
+								name: partner.name[0],
+								address1: partner.address1[0],
+								address2: partner.address2[0], 
+								postcode: partner.postcode[0],
+								city: partner.city[0],
+								country: partner.country[0],
+							}							
+						}
+
+						return resolve(servicePartner);
+					});
+					
+				});
+
+			}).on("error", (err) => {
+				logger.error(err);
+				return reject(err);
 			});
+
 		});
-
-		// return await http.get(url, response => {
-
-		// 	logger.debug("YESH");
-
-		// 	return response;
-			
-
-		// }).on('error', (e) => {
-		// 	throw e;
-		// });;
-
-		// return await http.request(options, (response) => {
-		// 	return response;
-
-		// }).on('error', (e) => {
-		// 	logger.error(e);
-		// 	return e;
-		// });
-
-		// curl_setopt($this->curl, CURLOPT_URL, $url);
-		// curl_setopt($this->curl, CURLOPT_POST, 0);
-		// $headers = array(
-		// 	"X-Cargonizer-Key:".$this->api_key,
-		// 	"X-Cargonizer-Sender:".$this->sender_id,
-		// 	"Content-type:application/xml",
-		// 	"Content-length:0",
-		// );
-		// curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
-		// $response = $this->runRequest();
-		
-		// return $response;
 	}
 
 	// private function runRequest($debug=0) {
@@ -219,11 +189,11 @@ export class CargonizerService {
 	// 	} 
 	// 	return $response;
 	// }
-	
+
 	// private function parseResponse($xml,$debug=0) {
 	// 	$sxml = simplexml_load_string($xml);
 	// 	$this->sxml = $sxml;
-		
+
 	// 	if($sxml->getName() == "errors") {
 	// 		if($debug == 1) echo "SXML<br><pre>".print_r($sxml,1)."</pre>";
 	// 		$this->error_flag = 1;
@@ -245,7 +215,7 @@ export class CargonizerService {
 
 	// private function toXmlFromWcOrder($order, $wc_order_weight, $service_partner) {
 	// 	$order_senders_ref = '#' . $order->get_order_number() . ' ';
-	  
+
 	//   	// Adding product names in short format for ref on printed labels
 	//   	foreach ($order->get_items() as $item_id => $item_data) {
 	// 	  $product = $item_data->get_product();
@@ -271,7 +241,7 @@ export class CargonizerService {
 	// 		}
 	// 	  }
 	// 	}
-	  
+
 	// 	$order_customer_number = $order->get_customer_id();
 	// 	$order_name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
 	// 	$order_address1 = $order->get_shipping_address_1();
@@ -303,7 +273,7 @@ export class CargonizerService {
 	// 	xmlwriter_end_element($xw); // product
 
 	// 	xmlwriter_start_element($xw, 'parts');
-		
+
 	// 		xmlwriter_start_element($xw, 'consignee');
 
 	// 			xmlwriter_start_element($xw, 'number');
@@ -401,7 +371,7 @@ export class CargonizerService {
 	// 		xmlwriter_text($xw, 'NO');
 	// 		xmlwriter_end_element($xw); // country
 	// 	xmlwriter_end_element($xw); // return_address
-		
+
 	// 	xmlwriter_end_element($xw); // consignment
 
 	// 	xmlwriter_end_element($xw); // consignments
@@ -454,7 +424,7 @@ function cargonizer_request_consignment( $order, $useSandbox = 0 ) {
   $crg_consignment_url = "http://cargonizer.no/consignments.xml";
   $crg_transport_url = "http://cargonizer.no/transport_agreements.xml";
   $crg_transport_agreement = "9389";
-  
+
   if($useSandbox == 1) {
       $crg_api_key = "3929bc31e5d97fe928ab0c1b3dde7ff71bf85ad2";
       $crg_sender_id = "1319";
@@ -462,9 +432,9 @@ function cargonizer_request_consignment( $order, $useSandbox = 0 ) {
       $crg_transport_url = "http://sandbox.cargonizer.no/transport_agreements.xml";
       $crg_transport_agreement = "1061";
   }
-  
+
   $debug = 0;
-  
+
   $wc_order = new WC_Order($order->get_id());
   $total_weight = 0;
 
@@ -482,10 +452,10 @@ function cargonizer_request_consignment( $order, $useSandbox = 0 ) {
 
   $crg = new cargonizer($crg_api_key, $crg_sender_id, $crg_transport_agreement, $crg_consignment_url);
   $response = $crg->requestConsignment($wc_order, $total_weight, $debug);
-  
+
   // TODO: check response for errors and 40x, 50x => Add error note on product (and log etc.)
   //$order->add_order_note($response);
-    
+
   // Add the sent flag
   update_post_meta( $order->get_id(), '_wc_order_sent_to_cargonizer', true );
 
@@ -505,7 +475,7 @@ class cargonizer {
 	private $service_partners_url = "http://cargonizer.no/service_partners.xml";
 	private $api_key;
 	private $sender_id;
-	private $curl; 
+	private $curl;
 	private $data_xml = "<xml></xml>";
 	private $data = array();
 	private $pkg_number;
@@ -522,44 +492,44 @@ class cargonizer {
 		$this->api_key = $api_key;
 		$this->sender_id = $sender_id;
 		$this->transport_agreement = $transport_agreement;
-		
+
 		$this->curl = curl_init();
-		curl_setopt($this->curl, CURLOPT_URL, $this->consignment_url); 
-		curl_setopt($this->curl, CURLOPT_VERBOSE, 1); 
-		curl_setopt($this->curl, CURLOPT_HEADER, 0); 
-		curl_setopt($this->curl, CURLOPT_POST, 1); 
-		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1); 
+		curl_setopt($this->curl, CURLOPT_URL, $this->consignment_url);
+		curl_setopt($this->curl, CURLOPT_VERBOSE, 1);
+		curl_setopt($this->curl, CURLOPT_HEADER, 0);
+		curl_setopt($this->curl, CURLOPT_POST, 1);
+		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
 	}
-	
+
 	public function __destruct() {
 		curl_close($this->curl);
 	}
-	
+
 	public function getPkgNumber() {
 		return $this->pkg_number;
 	}
-	
+
 	public function getUrls() {
 		return $this->urls;
 	}
-	
+
 	public function getErrorFlag() {
 		return $this->error_flag;
 	}
-	
+
 	public function getErrors() {
 		return $this->errors;
 	}
-	
+
 	public function getCostEstimate() {
 		return $this->cost_estimate;
 	}
-	
+
 
 	public function getResultXml() {
 		return $this->sxml;
 	}
-	
+
 
 	public function requestConsignment($wc_order, $wc_order_weight,	 $debug=0) {
 		$this->pkg_number = "0";
@@ -569,9 +539,9 @@ class cargonizer {
 
 		$service_partner = NULL;
 		$servicePartnerResponse = $this->requestServicePartners('NO', $wc_order->get_shipping_postcode());
-		
+
 		$sxml = simplexml_load_string($servicePartnerResponse);
-		
+
 		echo "<pre>".print_r($sxml->{'service-partners'}->{'service-partner'},1)."</pre>";
 
 		if($sxml->{'service-partners'}->{'service-partner'} != NULL) {
@@ -590,14 +560,14 @@ class cargonizer {
 			);
 		}
 
-		$xml = $this->toXmlFromWcOrder($wc_order, $wc_order_weight, $service_partner); 
+		$xml = $this->toXmlFromWcOrder($wc_order, $wc_order_weight, $service_partner);
 
 		curl_setopt($this->curl, CURLOPT_URL, $this->consignment_url);
 		curl_setopt($this->curl, CURLOPT_POST, 1);
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "POST");
-		
+
 		if($debug == 0) echo "XML<br>\n".print_r($xml,1)."<br>\n";
-		
+
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, $xml);
 		$headers = array(
 			"X-Cargonizer-Key:".$this->api_key,
@@ -605,17 +575,17 @@ class cargonizer {
 			"Content-type:application/xml",
 			"Content-length:".strlen($xml),
 		);
-		if($debug == 1) echo "Header\n".print_r($headers,1)."<br>\n";	
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers); 
-		
+		if($debug == 1) echo "Header\n".print_r($headers,1)."<br>\n";
+		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+
 		if($debug == 0) $response = $this->runRequest($debug);
-		
+
 		if($debug == 1) $this->parseResponse($response,$debug);
-		
+
 		return $response;
 	}
 
-	
+
 	public function requestTransportAgreements($url = "") {
 		if($url == '') $url = $this->transport_agreement_url;
 		echo "URL: $url<br>\n";
@@ -629,14 +599,14 @@ class cargonizer {
 		);
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		$response = $this->runRequest($debug);
-		
+
 		return $response;
 	}
-		
+
 
 	public function requestServicePartners($country, $postcode, $url = "") {
 		if($url == '') $url = $this->service_partners_url;
-		
+
 		$url = $url . '?country=' . $country . '&postcode=' . $postcode;
 
 		curl_setopt($this->curl, CURLOPT_URL, $url);
@@ -649,27 +619,27 @@ class cargonizer {
 		);
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		$response = $this->runRequest();
-		
+
 		return $response;
 	}
 
 	private function runRequest($debug=0) {
-		$response = curl_exec($this->curl); 
-		if(!curl_errno($this->curl)) { 
-			$info = curl_getinfo($this->curl); 
-			if($debug == 1) echo 'Took ' . $info['total_time'] . ' seconds to send a request to ' . $info['url']."<br>\n"; 
-		} else { 
+		$response = curl_exec($this->curl);
+		if(!curl_errno($this->curl)) {
+			$info = curl_getinfo($this->curl);
+			if($debug == 1) echo 'Took ' . $info['total_time'] . ' seconds to send a request to ' . $info['url']."<br>\n";
+		} else {
 			if($debug == 1) echo 'Curl error: ' . curl_error($this->curl)."<br>\n";
 			$this->error_flag = 1;
 			$this->errors['curl_request'] .= curl_error($this->curl)."\n";
-		} 
+		}
 		return $response;
 	}
-	
+
 	private function parseResponse($xml,$debug=0) {
 		$sxml = simplexml_load_string($xml);
 		$this->sxml = $sxml;
-		
+
 		if($sxml->getName() == "errors") {
 			if($debug == 1) echo "SXML<br><pre>".print_r($sxml,1)."</pre>";
 			$this->error_flag = 1;
@@ -691,11 +661,11 @@ class cargonizer {
 
 	private function toXmlFromWcOrder($order, $wc_order_weight, $service_partner) {
 		$order_senders_ref = '#' . $order->get_order_number() . ' ';
-	  
+
 	  	// Adding product names in short format for ref on printed labels
 	  	foreach ($order->get_items() as $item_id => $item_data) {
 		  $product = $item_data->get_product();
-		  $product_name = $product->get_name(); 
+		  $product_name = $product->get_name();
 		  $item_quantity = $item_data->get_quantity();
 
 		  if (strpos($product_name, 'Kaffeabonnement') !== false) {
@@ -717,7 +687,7 @@ class cargonizer {
 			}
 		  }
 		}
-	  
+
 		$order_customer_number = $order->get_customer_id();
 		$order_name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
 		$order_address1 = $order->get_shipping_address_1();
@@ -749,21 +719,21 @@ class cargonizer {
 		xmlwriter_end_element($xw); // product
 
 		xmlwriter_start_element($xw, 'parts');
-		
+
 			xmlwriter_start_element($xw, 'consignee');
 
 				xmlwriter_start_element($xw, 'number');
 				xmlwriter_text($xw, $order_customer_number);
-				xmlwriter_end_element($xw); // number			
+				xmlwriter_end_element($xw); // number
 				xmlwriter_start_element($xw, 'name');
 				xmlwriter_text($xw, $order_name);
 				xmlwriter_end_element($xw); // name
 				xmlwriter_start_element($xw, 'address1');
 				xmlwriter_text($xw, $order_address1);
-				xmlwriter_end_element($xw); // address1		
+				xmlwriter_end_element($xw); // address1
 				xmlwriter_start_element($xw, 'address2');
 				xmlwriter_text($xw, $order_address2);
-				xmlwriter_end_element($xw); // address2			
+				xmlwriter_end_element($xw); // address2
 				xmlwriter_start_element($xw, 'postcode');
 				xmlwriter_text($xw, $order_postcode);
 				xmlwriter_end_element($xw); // postcode
@@ -847,7 +817,7 @@ class cargonizer {
 			xmlwriter_text($xw, 'NO');
 			xmlwriter_end_element($xw); // country
 		xmlwriter_end_element($xw); // return_address
-		
+
 		xmlwriter_end_element($xw); // consignment
 
 		xmlwriter_end_element($xw); // consignments
