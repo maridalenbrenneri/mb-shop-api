@@ -70,18 +70,12 @@ export class CargonizerService {
 		this.cost_estimate = 0;
 
 		let service_partner = null;
-		try {
-			let servicePartnerResponse = await this.requestServicePartners('NO', customer.zipCode);
-
-			logger.debug(servicePartnerResponse);
-
-			return servicePartnerResponse;
-		}
-		catch(e) {
-			logger.error(e);
-			return e;
-		}
 		
+		let servicePartnerResponse = await this.requestServicePartners('NO', customer.zipCode);
+
+		logger.debug(servicePartnerResponse);
+
+		return servicePartnerResponse;
 		
 	//	let sxml = simplexml_load_string(servicePartnerResponse);
 		
