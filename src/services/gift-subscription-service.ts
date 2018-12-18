@@ -3,6 +3,7 @@ import giftSubscriptionRepo from '../repositories/gift-subscription-repo';
 import logger from '../utils/logger';
 import wooService from './woo-service';
 import { GiftSubscriptionValidator } from "../validators/gift-subscription-validator";
+import moment = require("moment");
 
 class GiftSubscriptionService {
 
@@ -71,31 +72,39 @@ class GiftSubscriptionService {
         });
     }
 
-    async import(res: Response) {
+    setLastOrderCreated(giftSubscriptionId: number): any {
+        return giftSubscriptionRepo.updateGiftSubscription(giftSubscriptionId, {
+            lastOrderCreated: moment().toDate()
+        });
+    }
+
+    setFirstDeliveryDate(giftSubscriptionId: number, date: Date): any {
+
+        GiftSubscriptionValidator.validateFirstDeliveryDate(date);
+
+        return giftSubscriptionRepo.updateGiftSubscription(giftSubscriptionId, {
+            firstDeliveryDate: date
+        });
+    }
+
+    async import() {
 
         let importedCount = 0;
 
-        try {
-            const giftSubscriptions = await giftSubscriptionRepo.getGiftSubscriptions({});
-            const wooSubscriptions = await wooService.getActiveGiftSubscriptions();
-                    
-            for(const wooSubscription of wooSubscriptions) {
-    
-                let sub = giftSubscriptions.find(s => s.wooOrderId == wooSubscription.wooOrderId);
-    
-                if(!sub) {
-                    await giftSubscriptionRepo.createGiftSubscription(wooSubscription);
-                    importedCount++;
-                }
+        const giftSubscriptions = await giftSubscriptionRepo.getGiftSubscriptions({});
+        const wooSubscriptions = await wooService.getActiveGiftSubscriptions();
+
+        for (const wooSubscription of wooSubscriptions) {
+
+            let sub = giftSubscriptions.find(s => s.wooOrderId == wooSubscription.wooOrderId);
+
+            if (!sub) {
+                await giftSubscriptionRepo.createGiftSubscription(wooSubscription);
+                importedCount++;
             }
-    
-            return res.send({count: importedCount});
-        }
-        catch(e) {
-            logger.error(e);
-            return res.status(500).send({ error: "An error occured when importing gift subscriptions: " + e });
         }
 
+        return { count: importedCount };
     }
 
     mapToDbModel = function (giftSubscription) {
@@ -105,6 +114,7 @@ class GiftSubscriptionService {
             wooOrderNumber: giftSubscription.wooOrderNumber,
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
+            originalFirstDeliveryDate: giftSubscription.originalFirstDeliveryDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,
             numberOfMonths: giftSubscription.numberOfMonths,
             frequence: giftSubscription.frequence,
@@ -114,7 +124,8 @@ class GiftSubscriptionService {
             recipient_email: giftSubscription.recipient_email,
             recipient_address: JSON.stringify(giftSubscription.recipient_address),
             message_to_recipient: giftSubscription.message_to_recipient,
-            note: giftSubscription.note
+            note: giftSubscription.note,
+            lastOrderCreated: giftSubscription.lastOrderCreated
         };
     }
 
@@ -125,6 +136,7 @@ class GiftSubscriptionService {
             wooOrderNumber: giftSubscription.wooOrderNumber,
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
+            originalFirstDeliveryDate: giftSubscription.originalFirstDeliveryDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,
             lastDeliveryDate: wooService.resolveLastDeliveryDate(giftSubscription),
             numberOfMonths: giftSubscription.numberOfMonths,
@@ -135,10 +147,11 @@ class GiftSubscriptionService {
             recipient_email: giftSubscription.recipient_email,
             recipient_address: JSON.parse(giftSubscription.recipient_address),
             message_to_recipient: giftSubscription.message_to_recipient,
-            note: giftSubscription.note
+            note: giftSubscription.note,
+            lastOrderCreated: giftSubscription.lastOrderCreated
         };
     }
-   
+
 }
 
 export default new GiftSubscriptionService();

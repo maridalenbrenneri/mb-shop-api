@@ -1,7 +1,8 @@
 import { Response, Request } from "express";
 import logger from '../utils/logger';
+import { ValidationError } from "../models/validation-error";
 
-class ControllerBase {
+export class ControllerHelper {
 
     protected verifyApiKey = function (req: Request) : Boolean {
       var provider = req.get('X-Header-Provider');
@@ -21,10 +22,13 @@ class ControllerBase {
       return true;
     }
   
-    protected handleError(res: Response, err: any, message: string) : void {
-      logger.error(err);
-      res.status(500).send({error: message});
+    static handleError(res: Response, err: Error, message: string) : void {
+
+        if (err instanceof ValidationError) {
+            return res.status(422).send({validationError: err.message});
+        } 
+
+        logger.error(err);
+        return res.status(500).send({ error: message + ": " + err });
     }
   }
-
-  export default ControllerBase;

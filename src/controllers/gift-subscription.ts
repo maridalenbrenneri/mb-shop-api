@@ -1,47 +1,58 @@
 
 import { Response, Request } from "express";
-import GiftSubscriptionService from '../services/gift-subscription-service';
+import giftSubscriptionService from '../services/gift-subscription-service';
+import { ControllerHelper } from "./controller-base";
 
 class GiftSubscriptionController {
 
   /**
-   * GET /GiftSubscriptions/:id
+   * GET /giftsubscriptions/:id
    */
   getGiftSubscription = function (req: Request, res: Response) {
 
-    return GiftSubscriptionService.getGiftSubscription(req.body.id, res);
+    return giftSubscriptionService.getGiftSubscription(req.body.id, res);
   }
 
   /**
-   * GET /GiftSubscriptions
+   * GET /giftsubscriptions
    */
   getGiftSubscriptions = function (req: Request, res: Response) {
 
-    return GiftSubscriptionService.getGiftSubscriptions(res);
+    return giftSubscriptionService.getGiftSubscriptions(res);
   }
 
   /**
-   * POST /GiftSubscriptions
+   * POST /giftsubscriptions
    */
   createGiftSubscription = function (req: Request, res: Response) {
 
-    return GiftSubscriptionService.createGiftSubscription(req.body, res);
+    return giftSubscriptionService.createGiftSubscription(req.body, res);
   }
 
   /**
-   * PUT /GiftSubscriptions/:id
+   * PUT /giftsubscriptions/:id/first-delivery-date
    */
-  updateGiftSubscription = function (req: Request, res: Response) {
+  async setFirstDeliveryDate(req: Request, res: Response) {
 
-    return GiftSubscriptionService.updateGiftSubscription(req.body, res);
+    try {
+      return res.send(await giftSubscriptionService.setFirstDeliveryDate(req.params.id, req.body.firstDeliveryDate));
+    }
+    catch (e) {
+      return ControllerHelper.handleError(res, e, "An error occured when updating the gift subscription");
+    }
   }
 
   /**
-   * POST /ImportGiftSubscriptions
+   * POST /giftsubscriptions/import
    */
-  importGiftSubscriptions = function (req: Request, res: Response) {
+  async importGiftSubscriptions(req: Request, res: Response) {
 
-    return GiftSubscriptionService.import(res);
+    try {
+      return res.send(await giftSubscriptionService.import());
+    }
+    catch (e) {
+      return ControllerHelper.handleError(res, e, "An error occured when importing gift subscriptions");
+    }
   }
 }
 

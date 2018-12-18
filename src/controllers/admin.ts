@@ -3,13 +3,12 @@ import logger from '../utils/logger';
 import ProductRepo  from '../repositories/product-repo'
 import UserRepo from "../repositories/user-repo";
 import OrderRepo from "../repositories/order-repo";
-import ControllerBase from './controller-base';
 import SubscriptionRepo from "../repositories/subscription-repo";
 import customerRepo from "../repositories/customer-repo";
 import product from "./product";
 import giftSubscriptionRepo from "../repositories/gift-subscription-repo";
 
-class AdminController extends ControllerBase {
+class AdminController {
 
   createTable  = function (req: Request, res: Response) {
 

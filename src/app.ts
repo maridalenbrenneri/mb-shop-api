@@ -68,8 +68,7 @@ import customerController from './controllers/customer';
 import productController from './controllers/product';
 import orderController from './controllers/order';
 import giftSubscriptionController from './controllers/gift-subscription';
-
-//import subscriptionController from './controllers/subscription';
+import shippingController from './controllers/shipping';
 
 
 /*** API ***/
@@ -88,9 +87,13 @@ app.get("/api/users", isUserInAdmin, authController.getUsers);
 // Not supported for now
 // app.post("/api/users", authController.registerUser);
 
+// Shipping (Integration with Cargonizer)
+app.post('/api/shipping/ship-gift-subscription', shippingController.CreateConsignmentForGiftSubscription);
+
 // Gift subscriptions (Integration with Woo)
-app.get('/api/giftsubscriptions', giftSubscriptionController.getGiftSubscriptions);
-app.post('/api/giftsubscriptions/import', giftSubscriptionController.importGiftSubscriptions);
+app.get('/api/giftsubscriptions', isUserInSuperuser, giftSubscriptionController.getGiftSubscriptions);
+app.post('/api/giftsubscriptions/import', isUserInSuperuser, giftSubscriptionController.importGiftSubscriptions);
+app.put('/api/giftsubscriptions/:id/first-delivery-date', isUserInSuperuser, giftSubscriptionController.setFirstDeliveryDate);
 
 // Customers
 app.get("/api/customers", customerController.getCustomers);

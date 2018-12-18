@@ -53,7 +53,8 @@ export const giftSubscriptionModel = {
     wooOrderId: { type: INTEGER.UNSIGNED, allowNull: false },
     wooOrderNumber: { type: INTEGER.UNSIGNED, allowNull: false },
     orderDate: { type: DATE, allowNull: false },
-    firstDeliveryDate: { type: DATE, allowNull: false },
+    originalFirstDeliveryDate: { type: DATE, allowNull: false }, // The date-time entered by customer (defaults to order date)
+    firstDeliveryDate: { type: DATE, allowNull: false },         // The calculated and actual first deliver date
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
     frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },
@@ -63,6 +64,7 @@ export const giftSubscriptionModel = {
     recipient_address: { type: Sequlize.TEXT, allowNull: false },
     message_to_recipient: { type: TEXT },
     note: { type: STRING },
+    lastOrderCreated: { type: DATE },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 

@@ -1,10 +1,9 @@
 import { Response, Request } from "express";
 import * as jwt from 'jsonwebtoken';
-import ControllerBase from './controller-base';
 import UserRepo from "../repositories/user-repo";
 import userService from "../services/user-service";
 
-class AuthController extends ControllerBase {
+class AuthController {
 
     /**
      * AUTH

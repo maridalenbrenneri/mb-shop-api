@@ -153,6 +153,7 @@ class WooService {
             wooOrderNumber: orderItem.orderNumber,
             status: 'n/a',
             orderDate: orderItem.orderDate,
+            originalFirstDeliveryDate: startDate.toDate(),
             firstDeliveryDate: firstDeliveryDate,
             frequence: frequence,
             numberOfMonths: nrOfMonths,
