@@ -3,8 +3,6 @@ import giftSubscriptionRepo from '../repositories/gift-subscription-repo';
 import logger from '../utils/logger';
 import wooService from './woo-service';
 import { GiftSubscriptionValidator } from "../validators/gift-subscription-validator";
-import { SubscriptionDateHelper } from "./subscription-date-helper";
-import moment = require("moment");
 
 class GiftSubscriptionService {
 
@@ -104,6 +102,7 @@ class GiftSubscriptionService {
         return {
             id: giftSubscription.id,
             wooOrderId: giftSubscription.wooOrderId,
+            wooOrderNumber: giftSubscription.wooOrderNumber,
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,
@@ -123,6 +122,7 @@ class GiftSubscriptionService {
         return {
             id: giftSubscription.id,
             wooOrderId: giftSubscription.wooOrderId,
+            wooOrderNumber: giftSubscription.wooOrderNumber,
             status: giftSubscription.status,
             orderDate: giftSubscription.orderDate,
             firstDeliveryDate: giftSubscription.firstDeliveryDate,

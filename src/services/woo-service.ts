@@ -54,19 +54,27 @@ class WooService {
         for (const order of orders) {
 
             const orderId = order.id;
+            const orderNumber = +order.meta_data.find(data => data.key == '_order_number').value;
             const orderNote = order.customer_note;
             const orderDate = order.date_created;
             const orderCustomerName = order.billing.first_name + ' ' + order.billing.last_name;
 
             for (const item of order.line_items) {
                 if (item.product_id === GIFT_SUBSCRIPTION_GIFT_ID) {
-
+ 
                     item.orderId = orderId;
+                    item.orderNumber = orderNumber;
                     item.orderDate = orderDate;
                     item.orderNote = orderNote
                     item.orderCustomerName = orderCustomerName;
 
                     let dbItem = self.mapFromWooToDbModel(item);
+
+                    if(orderId == 3214) {
+                        // Special special... Order has incorrect date
+                        dbItem.firstDeliveryDate = moment("2019-01-01", "YYYY-MM-DD").toDate();
+                    }
+
                     if(today <= moment(self.resolveLastDeliveryDate(dbItem))) {
                         activeGiftSubscriptions.push(dbItem);
                     }
@@ -107,17 +115,19 @@ class WooService {
                 return 12;
         }
 
-        logger.warn("Unsupported Product Variation,  order id: " + orderItem.orderId + " ,variation id: " + orderItem.variation_id);
+        if(orderItem.orderId == 3204) {
+            // Hack for a specific order that has a removed variation id 
+            // todo: Can be removed after 19th feb 2019
+            return 3;
+        }
 
-        return 0;
-
-        // throw new Error("Unsupported Product Variation,  order id: " + orderItem.orderId + " ,variation id: " + orderItem.variation_id);
+        throw new Error("Unsupported Product Variation,  order id: " + orderItem.orderId + " ,variation id: " + orderItem.variation_id);
     } 
 
     private mapFromWooToDbModel(orderItem: any) {
 
         const df = this.resolveMetadataValue(orderItem.meta_data, 'levering');
-        const frequency = df && df.includes('Annenhver uke') 
+        const frequence = df && df.includes('Annenhver uke') 
             ? SubscriptionFrequence.fortnightly
             : SubscriptionFrequence.monthly;
 
@@ -136,14 +146,15 @@ class WooService {
         }
 
         // Check from day before in case the date is an actual delivery date (then next would have been selected).
-        const firstDeliveryDate = SubscriptionDateHelper.resolveNextDeliveryDate(startDate.add(-1, 'd').toDate(), frequency);
+        const firstDeliveryDate = SubscriptionDateHelper.resolveNextDeliveryDate(startDate.add(-1, 'd').toDate(), frequence);
 
         const model = {
             wooOrderId: orderItem.orderId,
+            wooOrderNumber: orderItem.orderNumber,
             status: 'n/a',
             orderDate: orderItem.orderDate,
             firstDeliveryDate: firstDeliveryDate,
-            frequence: frequency,
+            frequence: frequence,
             numberOfMonths: nrOfMonths,
             quantity: +this.resolveMetadataValue(orderItem.meta_data, 'poser'),
             customerName: orderItem.orderCustomerName,

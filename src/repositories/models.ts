@@ -51,6 +51,7 @@ export const orderModel = {
 export const giftSubscriptionModel = {
     status: { type: STRING, allowNull: false },
     wooOrderId: { type: INTEGER.UNSIGNED, allowNull: false },
+    wooOrderNumber: { type: INTEGER.UNSIGNED, allowNull: false },
     orderDate: { type: DATE, allowNull: false },
     firstDeliveryDate: { type: DATE, allowNull: false },
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
