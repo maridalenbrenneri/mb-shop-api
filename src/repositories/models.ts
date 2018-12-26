@@ -58,6 +58,7 @@ export const giftSubscriptionModel = {
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
     frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },
+    customerId: { type: INTEGER.UNSIGNED },
     customerName: { type: STRING },
     recipient_name: { type: STRING, allowNull: false },
     recipient_email: { type: STRING, allowNull: false },
