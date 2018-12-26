@@ -2,7 +2,6 @@ import { Response, Request } from "express";
 import { CargonizerService, Consignment, ShippingType } from "../services/cargonizer-service";
 import giftSubscriptionService from '../services/gift-subscription-service';
 import { ControllerHelper } from "./controller-base";
-import logger from "../utils/logger";
 
 class ShippingController {
 
@@ -12,7 +11,6 @@ class ShippingController {
 
         try {
             const sub = req.body;
-            logger.debug(sub);
 
             const consignment: Consignment = {
                 shippingType: ShippingType.standard_private,
@@ -26,17 +24,16 @@ class ShippingController {
                     street2: sub.recipient_address.street2,
                     zipCode: sub.recipient_address.zipCode,
                     place: sub.recipient_address.place,
-                    country: "no",	
+                    country: "NO",	
                     contactPerson: sub.recipient_name,
                 }
             }
 
-            const result = await cargonizer.requestConsignment(consignment);
+            await cargonizer.requestConsignment(consignment);
 
-            // todo: Validate result from cargonizer..? 
+            await giftSubscriptionService.setLastOrderCreated(sub.id);
 
-            return res.send(result);
-            // return res.send(await giftSubscriptionService.setLastOrderCreated(sub.id));
+            return res.send("Consignment was created");
         } 
         catch (e) {
             return ControllerHelper.handleError(res, e, "Error when creating consignment in Cargonizer");
