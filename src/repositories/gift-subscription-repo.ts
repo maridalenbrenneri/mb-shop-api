@@ -17,7 +17,12 @@ class GiftSubscriptionRepo extends BaseRepo {
         filter = filter || {};
         filter.isDeleted = false;
 
-        return this.GiftSubscription.findAll({where:filter});
+        return this.GiftSubscription.findAll({
+            where:filter,
+            order: [
+                ['wooOrderNumber', 'DESC']
+            ]
+        });
     }
 
     createGiftSubscription = function(giftSubscription) {

@@ -70,7 +70,7 @@ class WooService {
 
                     let dbItem = self.mapFromWooToDbModel(item);
 
-                    if(orderId == 3214) {
+                    if(orderId == 3214 || orderId == 3398) {
                         // Special special... Order has incorrect date
                         dbItem.firstDeliveryDate = moment("2019-01-01", "YYYY-MM-DD").toDate();
                     }

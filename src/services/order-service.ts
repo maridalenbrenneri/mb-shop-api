@@ -15,6 +15,9 @@ class OrderService {
         order.status = OrderStatus.processing;
         order.notes = [];
 
+        // todo: ...
+        order.type = "SINGLE"; // GIFTSUBSCRIPTION-RENEWAL, RENEWAL
+
         return orderRepo.createOrder(self.mapToDbModel(order)).then(dbOrder => {
 
             let clientOrder = self.mapToClientModel(dbOrder);

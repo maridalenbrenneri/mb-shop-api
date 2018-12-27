@@ -43,8 +43,8 @@ export const orderModel = {
     customer: { type: Sequlize.TEXT },
     items: { type: Sequlize.TEXT },
     notes: { type: Sequlize.TEXT },
-    isRecurringOrder: { type: BOOLEAN, allowNull: false, defaultValue: false },
-    subscriptionId: { type: INTEGER, allowNull: true },
+    parentOrderId: {type: INTEGER.UNSIGNED },
+    type: { type: STRING, allowNull: false },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
@@ -54,7 +54,7 @@ export const giftSubscriptionModel = {
     wooOrderNumber: { type: INTEGER.UNSIGNED, allowNull: false },
     orderDate: { type: DATE, allowNull: false },
     originalFirstDeliveryDate: { type: DATE, allowNull: false }, // The date-time entered by customer (defaults to order date)
-    firstDeliveryDate: { type: DATE, allowNull: false },         // The calculated and actual first deliver date
+    firstDeliveryDate: { type: DATE, allowNull: false },         // The calculated and actual first delivery date
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
     frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },

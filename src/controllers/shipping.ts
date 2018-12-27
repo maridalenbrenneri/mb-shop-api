@@ -31,9 +31,9 @@ class ShippingController {
 
             await cargonizer.requestConsignment(consignment);
 
-            await giftSubscriptionService.setLastOrderCreated(sub.id);
+            const updatedGiftSubscription = await giftSubscriptionService.setLastOrderCreated(sub.id);
 
-            return res.send("Consignment was created");
+            return res.send(updatedGiftSubscription);
         } 
         catch (e) {
             return ControllerHelper.handleError(res, e, "Error when creating consignment in Cargonizer");
