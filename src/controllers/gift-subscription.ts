@@ -16,9 +16,15 @@ class GiftSubscriptionController {
   /**
    * GET /giftsubscriptions
    */
-  getGiftSubscriptions = function (req: Request, res: Response) {
+  async getGiftSubscriptions(req: Request, res: Response) {
 
-    return giftSubscriptionService.getGiftSubscriptions(res);
+    try {
+      return res.send(await giftSubscriptionService.getGiftSubscriptions());
+    }
+    catch(e) {
+      return ControllerHelper.handleError(res, e, "An error occured when getting gift subscriptions");
+    }
+    
   }
 
   /**

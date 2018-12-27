@@ -23,18 +23,13 @@ class GiftSubscriptionService {
         });
     }
 
-    getGiftSubscriptions(res: Response) {
+    async getGiftSubscriptions() {
         let self = this;
         let filter = {};
 
-        return giftSubscriptionRepo.getGiftSubscriptions(filter).then(giftSubscriptions => {
+        return await giftSubscriptionRepo.getGiftSubscriptions(filter).then(giftSubscriptions => {
 
-            let clientGiftSubscriptions = giftSubscriptions.map(p => self.mapToClientModel(p));
-            return res.send(clientGiftSubscriptions);
-
-        }).catch(function (err) {
-            logger.error(err);
-            return res.status(500).send({ error: "An error occured when getting the gift subscriptions: " + err });
+            return giftSubscriptions.map(p => self.mapToClientModel(p));
         });
     }
 

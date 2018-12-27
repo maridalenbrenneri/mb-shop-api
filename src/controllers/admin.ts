@@ -7,6 +7,7 @@ import SubscriptionRepo from "../repositories/subscription-repo";
 import customerRepo from "../repositories/customer-repo";
 import product from "./product";
 import giftSubscriptionRepo from "../repositories/gift-subscription-repo";
+import dashboardService from "../services/dashboard-service";
 
 class AdminController {
 
@@ -44,6 +45,12 @@ class AdminController {
       logger.error(err);
       res.status(500).send({error: "An error occured when getting data. Error: " + err});
     });
+  }
+
+  getStats  = async function (req: Request, res: Response) {
+    const stats = await dashboardService.getStats();
+    res.send(stats);
+
   }
 }
 

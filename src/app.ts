@@ -75,6 +75,7 @@ import shippingController from './controllers/shipping';
 
 // Admin routes
 app.post("/api/admin/create-tables", isUserInAdmin, adminController.createTable);
+app.get("/api/admin/stats", adminController.getStats);
 
 app.get("/api/admin/hello", adminController.hello);
 app.get("/api/admin/testdb", adminController.testDb);
