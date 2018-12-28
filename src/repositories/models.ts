@@ -55,6 +55,7 @@ export const giftSubscriptionModel = {
     orderDate: { type: DATE, allowNull: false },
     originalFirstDeliveryDate: { type: DATE, allowNull: false }, // The date-time entered by customer (defaults to order date)
     firstDeliveryDate: { type: DATE, allowNull: false },         // The calculated and actual first delivery date
+    lastDeliveryDate: { type: DATE, allowNull: false },          // We save last delivery date to make it possible to change (could else be calculated with numberOfMonths)
     numberOfMonths: { type: INTEGER.UNSIGNED, allowNull: false },
     frequence: { type: INTEGER.UNSIGNED, allowNull: false },
     quantity: { type: INTEGER.UNSIGNED, allowNull: false },

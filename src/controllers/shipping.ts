@@ -15,7 +15,7 @@ class ShippingController {
             const consignment: Consignment = {
                 shippingType: ShippingType.standard_private,
                 weight: 1000,
-                reference: "GABO" + sub.quantity,
+                reference: "#" + sub.wooOrderId + " GABO" + sub.quantity,
                 customer: {
                     email: sub.recipient_email,
                     phone: sub.recipient_phone,

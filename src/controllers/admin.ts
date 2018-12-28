@@ -11,16 +11,16 @@ import dashboardService from "../services/dashboard-service";
 
 class AdminController {
 
-  // WARN: Overrides any exitsting tables
+  // WARNING: Overrides any existing tables
+
   createTable  = function (req: Request, res: Response) {
 
     Promise.all([
       // UserRepo.createTable(true), 
       // customerRepo.createTable(true),
       // ProductRepo.createTable(true),
-      //OrderRepo.createTable(true),
-
-      //giftSubscriptionRepo.createTable(true)
+      // OrderRepo.createTable(true),
+       // giftSubscriptionRepo.createTable(true)
 
     ]).then(() => {
       logger.info("Tables created");

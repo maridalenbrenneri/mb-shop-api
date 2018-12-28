@@ -1,11 +1,9 @@
 import * as moment from 'moment';
 import * as https from 'https';
 import { SubscriptionFrequence } from "../constants";
-import logger from "../utils/logger";
 import { SubscriptionDateHelper } from './subscription-date-helper';
 
 const WOO_API_BASE_URL = 'https://maridalenbrenneri.no/wp-json/wc/v2/';
-//const WOO_SUBSCRIPTION_API_BASE_URL = 'https://maridalenbrenneri.no/wp-json/wc/v1/';
 const GIFT_SUBSCRIPTION_GIFT_ID = 968;
 
 class WooService {
@@ -40,9 +38,9 @@ class WooService {
         });
     }
 
-    resolveLastDeliveryDate(giftSubscription) {
-        const date = moment(giftSubscription.firstDeliveryDate).add(giftSubscription.numberOfMonths - 1, 'M');
-        return SubscriptionDateHelper.resolveNextDeliveryDate(date.toDate(), giftSubscription.frequency); 
+    resolveLastDeliveryDate(firstDeliveryDate: Date, numberOfMonths: number, frequence: number) {
+        const date = moment(firstDeliveryDate).add(numberOfMonths - 1, 'M');
+        return SubscriptionDateHelper.resolveNextDeliveryDate(date.toDate(), frequence); 
     }
 
     private filterActiveGiftSubscriptions(orders: any): Array<any> {
@@ -70,12 +68,8 @@ class WooService {
 
                     let dbItem = self.mapFromWooToDbModel(item);
 
-                    if(orderId == 3214 || orderId == 3398) {
-                        // Special special... Order has incorrect date
-                        dbItem.firstDeliveryDate = moment("2019-01-01", "YYYY-MM-DD").toDate();
-                    }
+                    if(today <= moment(dbItem.lastDeliveryDate)) {
 
-                    if(today <= moment(self.resolveLastDeliveryDate(dbItem))) {
                         activeGiftSubscriptions.push(dbItem);
                     }
                 }
@@ -146,7 +140,12 @@ class WooService {
         }
 
         // Check from day before in case the date is an actual delivery date (then next would have been selected).
-        const firstDeliveryDate = SubscriptionDateHelper.resolveNextDeliveryDate(startDate.add(-1, 'd').toDate(), frequence);
+        let firstDeliveryDate = SubscriptionDateHelper.resolveNextDeliveryDate(startDate.add(-1, 'd').toDate(), frequence);
+
+        if(orderItem.orderId == 3214 || orderItem.orderId == 3398) {
+            // Special special... Orders has incorrect date
+            firstDeliveryDate = moment("2019-01-01", "YYYY-MM-DD").toDate();
+        }
 
         const model = {
             wooOrderId: orderItem.orderId,
@@ -155,6 +154,7 @@ class WooService {
             orderDate: orderItem.orderDate,
             originalFirstDeliveryDate: startDate.toDate(),
             firstDeliveryDate: firstDeliveryDate,
+            lastDeliveryDate: this.resolveLastDeliveryDate(firstDeliveryDate, nrOfMonths, frequence),
             frequence: frequence,
             numberOfMonths: nrOfMonths,
             quantity: +this.resolveMetadataValue(orderItem.meta_data, 'poser'),
