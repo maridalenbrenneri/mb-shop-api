@@ -2,6 +2,7 @@ export class Constants {
     static readonly deliveryDay = 2; // Tuesday
     static readonly subscriptionRenewalPaymentDaysBeforeDelivery = 14;
     static readonly minPasswordLength = 5;
+    static readonly smallBagFreightWeight = 300; 
 }
 
 export class TaxRates {

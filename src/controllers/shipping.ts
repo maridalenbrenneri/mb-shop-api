@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { CargonizerService, Consignment, ShippingType } from "../services/cargonizer-service";
 import giftSubscriptionService from '../services/gift-subscription-service';
 import { ControllerHelper } from "./controller-base";
+import { Constants } from "../constants";
 
 class ShippingController {
 
@@ -14,8 +15,8 @@ class ShippingController {
 
             const consignment: Consignment = {
                 shippingType: ShippingType.standard_private,
-                weight: 1000,
-                reference: "#" + sub.wooOrderId + " GABO" + sub.quantity,
+                weight: sub.quantity * Constants.smallBagFreightWeight,
+                reference: "#" + sub.wooOrderNumber + " GABO" + sub.quantity,
                 customer: {
                     email: sub.recipient_email,
                     phone: sub.recipient_phone,
