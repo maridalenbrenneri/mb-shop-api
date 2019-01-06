@@ -78,7 +78,8 @@ export class CargonizerService {
 				}
 
 				if(response.statusCode != 201) {
-					return reject(response);
+					// Most likely a validation error such as an invalid zip code etc.
+					return reject(response.body);
 				}
 
 				require('xml2js').parseString(response.body, function (parseError: any, result: any) {
