@@ -2,10 +2,11 @@ import { Response, Request } from 'express';
 import customerRepo from '../repositories/customer-repo';
 import logger from '../utils/logger';
 import arrayUtils from '../utils/array-utils'
+import customerService from '../services/customer-service';
 class CustomerController {
 
-    /**
-     * GET /Customers/:id
+    /** 
+     * GET /customers/:id
      */
     getCustomer = function (req: Request, res: Response, next: any) {
 
@@ -28,9 +29,9 @@ class CustomerController {
      */
     getCustomers = function (req: Request, res: Response) {
 
-        let filter = { isActive: true };
+        // let filter = { isActive: true };
 
-        customerRepo.getCustomers(filter).then(customers => {
+        customerService.getCustomers().then(customers => {
 
             arrayUtils.sortByName(customers);
             res.send(customers);
