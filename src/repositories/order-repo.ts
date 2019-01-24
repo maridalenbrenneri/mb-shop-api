@@ -46,7 +46,17 @@ class OrderRepo extends BaseRepo {
 
             return order.update(
                 {
-                    orderNotes: orderNotes
+                    notes: orderNotes
+                });
+        });
+    }
+
+    addCustomerOrderNote = function (orderId: number, customerOrderNotes: string) {
+        return this.Order.findById(orderId).then(order => {
+
+            return order.update(
+                {
+                    customerNotes: customerOrderNotes
                 });
         });
     }

@@ -43,6 +43,7 @@ export const orderModel = {
     customer: { type: Sequlize.TEXT },
     items: { type: Sequlize.TEXT },
     notes: { type: Sequlize.TEXT },
+    customerNotes: { type: Sequlize.TEXT },
     parentOrderId: {type: INTEGER.UNSIGNED },
     type: { type: STRING, allowNull: false },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }

@@ -80,8 +80,27 @@ class OrderService {
 
         }).catch(function (err) {
             self.handleError(err, res);
-        });;
+        });
     }
+
+    addCustomerOrderNote(orderNote: any, res: any): any {
+        let self = this;
+
+        OrderValidator.validateCustomerOrderNote(orderNote);    
+
+        return orderRepo.getOrder(orderNote.orderId).then(order=> {
+
+            let clientOrder = this.mapToClientModel(order);
+
+            return orderRepo.addCustomerOrderNote(order.id, clientOrder.customerNotes).then(updatedOrder => {
+
+                return res.send(self.mapToClientModel(updatedOrder));
+            });
+
+        }).catch(function (err) {
+            self.handleError(err, res);
+        });
+    }    
 
     handleError(err: any, res: Response) {
         if (err instanceof ValidationError) {
@@ -101,6 +120,7 @@ class OrderService {
             customer: JSON.stringify(order.customer),
             items: JSON.stringify(order.items),
             notes: JSON.stringify(order.notes),
+            customerNotes: JSON.stringify(order.customerNotes),
             isRecurringOrder: order.isRecurringOrder,
             subscriptionId: order.subscriptionId
         };
@@ -117,6 +137,7 @@ class OrderService {
             customer: JSON.parse(order.customer),
             items: JSON.parse(order.items),
             notes: JSON.parse(order.notes),
+            customerNotes: order.customerNotes ? JSON.parse(order.customerNotes) : '',
             isRecurringOrder: order.isRecurringOrder,
             subscriptionId: order.subscriptionId
         }

@@ -42,4 +42,14 @@ export class OrderValidator {
             throw new ValidationError("Order note exceded maximum length");
         }
     }    
+
+    static validateCustomerOrderNote(orderNote: any): any {
+        if(!orderNote || !orderNote.orderId || !orderNote.customerNote) {
+            throw new ValidationError("Invalid order customer note");
+        }
+
+        if(orderNote.note.length > 3000) {
+            throw new ValidationError("Order customer note exceded maximum length");
+        }
+    }    
 }
