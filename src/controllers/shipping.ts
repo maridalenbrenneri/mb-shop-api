@@ -25,10 +25,10 @@ class ShippingController {
                     email: order.customer.email,
                     phone: order.customer.phone,
                     name: order.customer.name,
-                    street1: order.customer.deliveryAddress.street1,
-                    street2: order.customer.deliveryAddress.street2,
-                    zipCode: order.customer.deliveryAddress.zipCode,
-                    place: order.customer.deliveryAddress.place,
+                    street1: order.customer.address.street1,
+                    street2: order.customer.address.street2,
+                    zipCode: order.customer.address.zipCode,
+                    place: order.customer.address.place,
                     country: "NO",
                     contactPerson: order.customer.contactPerson
                 }
