@@ -29,7 +29,16 @@ class GiftSubscriptionService {
 
         return await giftSubscriptionRepo.getGiftSubscriptions(filter).then(giftSubscriptions => {
 
-            return giftSubscriptions.map(p => self.mapToClientModel(p));
+            const active = [];
+            const today = moment().startOf("day");
+
+            giftSubscriptions.forEach(item => {
+                if(today <= moment(item.lastDeliveryDate)) {
+                    active.push(self.mapToClientModel(item));
+                }
+            });
+           
+            return active;
         });
     }
 
