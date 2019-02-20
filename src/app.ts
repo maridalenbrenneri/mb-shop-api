@@ -70,7 +70,6 @@ import orderController from './controllers/order';
 import giftSubscriptionController from './controllers/gift-subscription';
 import shippingController from './controllers/shipping';
 
-
 /*** API ***/
 
 // Admin routes
@@ -99,9 +98,6 @@ app.put('/api/giftsubscriptions/:id/first-delivery-date', isUserInSuperuser, gif
 
 // Customers
 app.get("/api/customers", customerController.getCustomers);
-app.get("/api/customers/:id", customerController.getCustomer);
-app.post("/api/customers", isUserInSuperuser, customerController.createCustomer);
-app.put("/api/customers/:id", isUserInSuperuser, customerController.updateCustomer);
 
 // Products
 app.get("/api/products", productController.getProducts);
@@ -118,6 +114,8 @@ app.post("/api/orders/:id/complete", isUserInSuperuser, orderController.complete
 app.post("/api/orders/:id/cancel", isUserInSuperuser, orderController.cancelOrder);
 app.post("/api/orders/:id/process", isUserInSuperuser, orderController.processOrder);
 app.post("/api/orders/:id/notes", isUserInSuperuser, orderController.addOrderNote);
+app.post("/api/orders/:id/invoice", isUserInSuperuser, orderController.createInvoice);
+
 
 // Subscriptions
 // app.get("/api/subscriptions/mine", isAuthenticated, subscriptionController.getSubscriptions);

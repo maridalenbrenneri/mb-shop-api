@@ -1,7 +1,8 @@
 import { Response, Request } from "express";
 import orderRepo  from '../repositories/order-repo';
 import orderService from "../services/order-service";
-import { OrderStatus } from "../constants";
+import logger from '../utils/logger';
+import fikenService from '../services/fiken-service';
 
 class OrderController {
 
@@ -93,6 +94,19 @@ class OrderController {
 
   }  
 
+  /**
+   * POST /orders/:id/invoice
+   */
+  createInvoice = function (req: Request, res: Response) {
+
+    fikenService.createInvoice(req.body).then(() => {
+        res.send('Invoice created');
+
+    }).catch(function (err) {
+        logger.error(err);
+        res.status(500).send({ error: "An error occured when creating the invoice: " + err });
+    });
+  }
 }
 
 export default new OrderController();
