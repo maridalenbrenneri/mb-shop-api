@@ -1,6 +1,10 @@
 {
     "compilerOptions": {
-		"paths": { "*": ["types/*"] },
+        "paths": {
+            "*": [
+                "types/*"
+            ]
+        },
         "module": "commonjs",
         "moduleResolution": "node",
         "pretty": true,
