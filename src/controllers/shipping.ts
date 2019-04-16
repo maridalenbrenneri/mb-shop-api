@@ -12,9 +12,9 @@ class ShippingController {
         try {
             const order = req.body;
 
-            let weight = 0; 
+            let weight = 0;
             order.items.forEach(item => {
-               weight += (item.productVariation.weight * item.quantity); 
+                weight += (item.productVariation.weight * item.quantity);
             });
 
             const consignment: Consignment = {
@@ -36,7 +36,7 @@ class ShippingController {
 
             await cargonizer.requestConsignment(consignment);
 
-            return res.send({success:true});
+            return res.send({ success: true });
         }
         catch (e) {
             return ControllerHelper.handleError(res, e, "Error when creating consignment in Cargonizer");

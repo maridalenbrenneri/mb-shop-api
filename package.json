@@ -27,7 +27,7 @@
     "nodemon": "^1.18.3",
     "pg": "^7.4.3",
     "request": "^2.88.0",
-    "sequelize": "^4.38.0",
+    "sequelize": "^5.2.8",
     "typescript": "^3.0.1",
     "winston": "^3.0.0",
     "xml2js": "^0.4.19"

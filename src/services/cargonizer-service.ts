@@ -77,10 +77,10 @@ export class CargonizerService {
       body: xml
     };
 
-    return new Promise<any>(function(resolve, reject) {
+    return new Promise<any>(function (resolve, reject) {
       const request = require("request");
 
-      request(options, function(error: any, response: any) {
+      request(options, function (error: any, response: any) {
         if (error) {
           return reject(error);
         }
@@ -90,7 +90,7 @@ export class CargonizerService {
           return reject(response.body);
         }
 
-        require("xml2js").parseString(response.body, function(
+        require("xml2js").parseString(response.body, function (
           parseError: any,
           result: any
         ) {
@@ -112,14 +112,14 @@ export class CargonizerService {
       "&postcode=" +
       $postcode;
 
-    return new Promise<any>(function(resolve, reject) {
+    return new Promise<any>(function (resolve, reject) {
       const request = require("request");
-      request(url, function(error: any, response: { body: any }) {
+      request(url, function (error: any, response: { body: any }) {
         if (error) {
           return reject(error);
         }
 
-        require("xml2js").parseString(response.body, function(
+        require("xml2js").parseString(response.body, function (
           parseError: any,
           result: any
         ) {
@@ -158,13 +158,16 @@ export class CargonizerService {
       consignment.customer.zipCode
     );
 
+    const product = this.ShippingTypeToProduct(consignment.shippingType);
+
     const obj = {
       consignments: {
         consignment: {
           $: {
-            transport_agreement: this.transport_agreement
+            transport_agreement: this.transport_agreement,
+            print: true
           },
-          product: this.ShippingTypeToProduct(consignment.shippingType),
+          product: product,
           parts: {
             consignee: {
               name: consignment.customer.name,
@@ -217,21 +220,19 @@ export class CargonizerService {
 
   private ShippingTypeToProduct(shippingType: number): string {
     /*
-			"postnord_parcel_letter_mypack" - "PostNord MyPack Home Small"
-			"tg_stykkgods" - "PostNord Groupage"
 			"bring_pose_pa_doren_no_rfid" - "Bring Pose pa doren"
 			"bring_bedr_dor_dor" - "Bring Bedriftspakke"
-		*/
-
-    const product_business = "bring_bedr_dor_dor";
-    const product_private = "bring_pose_pa_doren_no_rfid";
-
-    if (shippingType == ShippingType.standard_business) {
-      return product_business;
-    }
+    */
 
     if (process.env.CARGONIZER_USE_SANDBOX) {
       return "bring_pa_doren";
+    }
+
+    const product_business = "bring_bedr_dor_dor";
+    const product_private = "bring_pose_pa_doren_rfid";
+
+    if (shippingType == ShippingType.standard_business) {
+      return product_business;
     }
 
     return product_private;
