@@ -1,11 +1,11 @@
-import Sequlize from 'sequelize'
-import { STRING, BOOLEAN, INTEGER, DATEONLY, DATE, TEXT} from 'sequelize';
+import { Sequelize } from 'sequelize'
+import { STRING, BOOLEAN, INTEGER, DATEONLY, DATE, TEXT } from 'sequelize';
 
 export const userModel = {
     email: { type: STRING, unique: true },
-    password: { type: STRING, allowNull: false }, 
+    password: { type: STRING, allowNull: false },
     role: { type: STRING, allowNull: false },         // admin, super-user, private-customer, business-customer
-    customerId: {type: INTEGER, allowNull: true },
+    customerId: { type: INTEGER, allowNull: true },
     isActive: { type: BOOLEAN, allowNull: false },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
@@ -15,19 +15,19 @@ export const customerModel = {
     name: { type: STRING, allowNull: false },
     organizationNumber: { type: STRING },
     phone: { type: STRING },
-    contactPerson: {type: STRING },
-    deliveryAddress: { type: Sequlize.TEXT },
-    invoiceAddress: { type: Sequlize.TEXT },
+    contactPerson: { type: STRING },
+    deliveryAddress: { type: Sequelize.TEXT },
+    invoiceAddress: { type: Sequelize.TEXT },
     note: { type: STRING },
     type: { type: STRING },
-    isActive: { type: BOOLEAN, allowNull: false, defaultValue: true  },
+    isActive: { type: BOOLEAN, allowNull: false, defaultValue: true },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
 
 export const productModel = {
     category: { type: STRING, allowNull: false },
-    data: { type: Sequlize.TEXT  },
-    productVariations: { type: Sequlize.TEXT }, 
+    data: { type: Sequelize.TEXT },
+    productVariations: { type: Sequelize.TEXT },
     infoUrl: { type: STRING },
     vatGroup: { type: STRING, allowNull: false },
     isActive: { type: BOOLEAN, allowNull: false, defaultValue: true },
@@ -37,14 +37,14 @@ export const productModel = {
 }
 
 export const orderModel = {
-    orderDate: {type: DATE, allowNull: false },
-    deliveryDate: {type: DATE, allowNull: true },
+    orderDate: { type: DATE, allowNull: false },
+    deliveryDate: { type: DATE, allowNull: true },
     status: { type: STRING, allowNull: false },
-    customer: { type: Sequlize.TEXT },
-    items: { type: Sequlize.TEXT },
-    notes: { type: Sequlize.TEXT },
-    customerNotes: { type: Sequlize.TEXT },
-    parentOrderId: {type: INTEGER.UNSIGNED },
+    customer: { type: Sequelize.TEXT },
+    items: { type: Sequelize.TEXT },
+    notes: { type: Sequelize.TEXT },
+    customerNotes: { type: Sequelize.TEXT },
+    parentOrderId: { type: INTEGER.UNSIGNED },
     type: { type: STRING, allowNull: false },
     isDeleted: { type: BOOLEAN, allowNull: false, defaultValue: false }
 }
@@ -64,7 +64,7 @@ export const giftSubscriptionModel = {
     customerName: { type: STRING },
     recipient_name: { type: STRING, allowNull: false },
     recipient_email: { type: STRING, allowNull: false },
-    recipient_address: { type: Sequlize.TEXT, allowNull: false },
+    recipient_address: { type: Sequelize.TEXT, allowNull: false },
     message_to_recipient: { type: TEXT },
     note: { type: STRING },
     lastOrderCreated: { type: DATE },
@@ -74,7 +74,7 @@ export const giftSubscriptionModel = {
 export const subscriptionModel = {
     parentOrderId: { type: INTEGER, allowNull: false },
     userId: { type: INTEGER, allowNull: false },
-    status: { type: STRING, allowNull: false},
+    status: { type: STRING, allowNull: false },
     frequence: { type: INTEGER, allowNull: false },
     quantity: { type: INTEGER, allowNull: false },
     firstDeliveryDate: { type: DATEONLY, allowNull: false },
